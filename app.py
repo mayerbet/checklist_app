@@ -84,9 +84,9 @@ try:
 
 # Apenas para ter o botão de copiar como no st.code (funciona mesmo sem mostrar texto duplicado)
             with st.expander("📋 Clique aqui para copiar o texto gerado"):
-            st.code(texto_editado, language="markdown")
+                 st.code(texto_editado, language="markdown")
 
-             st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
+            st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
 
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
