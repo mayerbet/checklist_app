@@ -15,6 +15,7 @@ def carregar_planilha():
 try:
     if "resetar" not in st.session_state:
         st.session_state["resetar"] = False
+
     xls = carregar_planilha()
     checklist_df = pd.read_excel(xls, sheet_name="Checklist")
     config_df = pd.read_excel(xls, sheet_name="Config")
@@ -26,11 +27,12 @@ try:
     config = config_df.iloc[1:].reset_index(drop=True)
     config.columns = ['Index', 'Topico', 'ComentarioPadrao']
 
-    # Função para resetar os estados dos widgets
-    def resetar_checklist():
+    # Botão de reset
+    if st.button("🧹 Limpar e Recomeçar"):
         for i in range(len(checklist)):
             st.session_state[f"resp_{i}"] = "OK"
             st.session_state[f"coment_{i}"] = ""
+        st.rerun()
 
     # Interface do checklist
     respostas = []
@@ -40,17 +42,21 @@ try:
         st.markdown(f"### {topico}")
 
         col1, col2 = st.columns([1, 3])
+
+        resposta_default = st.session_state.get(f"resp_{i}", "OK")
+        comentario_default = st.session_state.get(f"coment_{i}", "")
+
         with col1:
             resposta = st.radio(
                 label=f"Selecione para o tópico {i+1}",
                 options=['OK', 'X', 'N/A'],
-                index=0,
+                index=['OK', 'X', 'N/A'].index(resposta_default),
                 key=f"resp_{i}"
             )
         with col2:
             comentario_manual = ""
             if resposta != 'OK':
-                comentario_manual = st.text_input(f"Comentário adicional (opcional)", key=f"coment_{i}")
+                comentario_manual = st.text_input(f"Comentário adicional (opcional)", key=f"coment_{i}", value=comentario_default)
 
         respostas.append({
             "Topico": topico,
@@ -58,10 +64,6 @@ try:
             "ComentarioManual": comentario_manual,
             "Indice": i  # salvar o índice para controle de prioridade
         })
-
-    if st.button("🧹 Limpar e Recomeçar"):
-        st.session_state["resetar"] = True
-        st.rerun()
 
     # Geração dos comentários finais
     if st.button("✅ Gerar Comentários"):
