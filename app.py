@@ -7,12 +7,13 @@ st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.title("📊 Análise de Qualidade de Atendimentos - Checklist")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
-# Upload do arquivo Excel
-uploaded_file = st.file_uploader("📂 Envie sua planilha base (.xlsx)", type="xlsx")
+# Carrega a planilha fixa do repositório
+@st.cache_data
+def carregar_planilha():
+    return pd.ExcelFile("checklist_modelo.xlsx")
 
-if uploaded_file:
-    # Lendo as abas necessárias
-    xls = pd.ExcelFile(uploaded_file)
+try:
+    xls = carregar_planilha()
     checklist_df = pd.read_excel(xls, sheet_name="Checklist")
     config_df = pd.read_excel(xls, sheet_name="Config")
 
@@ -46,25 +47,38 @@ if uploaded_file:
         respostas.append({
             "Topico": topico,
             "Marcacao": resposta,
-            "ComentarioManual": comentario_manual
+            "ComentarioManual": comentario_manual,
+            "Indice": i  # salvar o índice para controle de prioridade
         })
 
     # Geração dos comentários finais
     if st.button("✅ Gerar Comentários"):
         st.subheader("📃 Resultado Final")
-        texto_final = ""
+        comentarios_x = []
+        comentarios_na = []
+
         for r in respostas:
-            if r["Marcacao"] == "X":
+            if r["Marcacao"] in ["X", "N/A"]:
                 base = config[config['Topico'] == r['Topico']]
                 comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
                 comentario_final = f"- {comentario_padrao}"
                 if r['ComentarioManual']:
                     comentario_final += f" ({r['ComentarioManual']})"
-                texto_final += comentario_final + "\n"
-        if texto_final:
+
+                if r["Marcacao"] == "X":
+                    comentarios_x.append((r["Indice"], comentario_final))
+                else:
+                    comentarios_na.append((r["Indice"], comentario_final))
+
+        # Ordenação: prioriza os últimos 5 tópicos se marcados com X
+        comentarios_x.sort(key=lambda x: (x[0] < len(respostas) - 5, x[0]))
+        comentarios_final = [c[1] for c in comentarios_x + comentarios_na]
+
+        if comentarios_final:
+            texto_final = "\n".join(comentarios_final)
             st.code(texto_final, language="markdown")
             st.download_button("💾 Baixar Comentários", data=texto_final, file_name="comentarios.txt")
         else:
-            st.info("Nenhuma marcação com 'X' foi encontrada.")
-else:
-    st.warning("Envie a planilha base para iniciar o checklist.")
+            st.info("Nenhuma marcação relevante foi encontrada.")
+except Exception as e:
+    st.error(f"Erro ao carregar a planilha: {e}")
