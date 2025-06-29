@@ -1,14 +1,11 @@
 import streamlit as st
 import pandas as pd
+import io
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 
 st.title("📊 Análise de Qualidade de Atendimentos - Checklist")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
-
-# Inicialização do estado da sessão
-if 'reset' not in st.session_state:
-    st.session_state.reset = False
 
 # Carrega a planilha fixa do repositório
 @st.cache_resource
@@ -27,19 +24,6 @@ try:
     config = config_df.iloc[1:].reset_index(drop=True)
     config.columns = ['Index', 'Topico', 'ComentarioPadrao']
 
-    # Botão para limpar a interface - deve vir antes da criação dos widgets
-    if st.button("🧹 Limpar e Recomeçar"):
-        st.session_state.reset = True
-        st.experimental_rerun()
-
-    # Resetar todos os widgets se necessário
-    if st.session_state.reset:
-        for key in list(st.session_state.keys()):
-            if key.startswith("resp_") or key.startswith("coment_"):
-                del st.session_state[key]
-        st.session_state.reset = False
-        st.experimental_rerun()
-
     # Interface do checklist
     respostas = []
     st.subheader("🔢 Checklist Interativo")
@@ -49,33 +33,22 @@ try:
 
         col1, col2 = st.columns([1, 3])
         with col1:
-            # Usamos um valor padrão se a chave não existir no session_state
-            default_index = 0
-            if f"resp_{i}" in st.session_state:
-                default_index = ['OK', 'X', 'N/A'].index(st.session_state[f"resp_{i}"])
-            
             resposta = st.radio(
                 label=f"Selecione para o tópico {i+1}",
                 options=['OK', 'X', 'N/A'],
-                index=default_index,
+                index=0,
                 key=f"resp_{i}"
             )
         with col2:
             comentario_manual = ""
             if resposta != 'OK':
-                # Usamos valor vazio se a chave não existir
-                default_value = st.session_state.get(f"coment_{i}", "")
-                comentario_manual = st.text_input(
-                    f"Comentário adicional (opcional)", 
-                    key=f"coment_{i}",
-                    value=default_value
-                )
+                comentario_manual = st.text_input(f"Comentário adicional (opcional)", key=f"coment_{i}")
 
         respostas.append({
             "Topico": topico,
             "Marcacao": resposta,
             "ComentarioManual": comentario_manual,
-            "Indice": i
+            "Indice": i  # salvar o índice para controle de prioridade
         })
 
     # Geração dos comentários finais
@@ -102,12 +75,17 @@ try:
         comentarios_x.sort(key=lambda x: (x[0] < len(respostas) - 5, x[0]))
         comentarios_final = [c[1] for c in comentarios_x + comentarios_na]
 
+        # ... (código anterior mantido)
+
         if comentarios_final:
-            texto_final = "\n\n".join(comentarios_final)
+            texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
+
             texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
+
             st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
+
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
-            
+# ... (restante do código mantido)
 except Exception as e:
     st.error(f"Erro ao carregar a planilha: {e}")
