@@ -88,7 +88,7 @@ try:
             st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
             st.code(texto_editado, language="markdown")
 
-            st.markdown("<button onclick=\"navigator.clipboard.writeText(`""" + texto_editado.replace("`", "\`") + ""`);\">📋 Copiar para Área de Transferência</button>", unsafe_allow_html=True)
+            st.markdown("<button onclick=\"navigator.clipboard.writeText(`""" + texto_editado.replace("`", "\`") + """`);\">📋 Copiar para Área de Transferência</button>", unsafe_allow_html=True)
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
 except Exception as e:
