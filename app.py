@@ -81,9 +81,9 @@ try:
 
         # ... (código anterior mantido)
 
-if comentarios_final:
-    texto_final = "\n\n".join(comentarios_final)
-    texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
+    if comentarios_final:
+        texto_final = "\n\n".join(comentarios_final)
+         texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
 
     # Container para os botões
     col1, col2, col3 = st.columns([1, 1, 3])
