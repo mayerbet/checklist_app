@@ -81,59 +81,15 @@ try:
 
         # ... (código anterior mantido)
 
-        if comentarios_final:
+            if comentarios_final:
             texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
 
             texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
 
-            # Container para os botões
-            col1, col2, col3 = st.columns([1, 1, 3])
-            
-            with col1:
-                st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
-            
-            with col2:
-                # Botão de cópia com JS seguro e oculto
-                st.markdown(f"""
-                <div style="position:relative;">
-                    <textarea id="comentarios" style="position:absolute;left:-9999px;">{texto_editado.replace('"', '&quot;')}</textarea>
-                    <button onclick="copiarTexto()" style="
-                        background-color: #4CAF50;
-                        color: white;
-                        padding: 8px 16px;
-                        border: none;
-                        border-radius: 4px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                        font-weight: bold;
-                    ">
-                        📋 Copiar
-                    </button>
-                </div>
-                
-                <script>
-                    function copiarTexto() {{
-                        var copyText = document.getElementById('comentarios');
-                        copyText.select();
-                        document.execCommand('copy');
-                        
-                        // Feedback visual
-                        var btn = event.currentTarget;
-                        btn.innerHTML = '✓ Copiado!';
-                        btn.style.backgroundColor = '#2E7D32';
-                        setTimeout(function() {{
-                            btn.innerHTML = '📋 Copiar';
-                            btn.style.backgroundColor = '#4CAF50';
-                        }}, 2000);
-                    }}
-                </script>
-                """, unsafe_allow_html=True)
+            st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
 
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
-
 # ... (restante do código mantido)
 except Exception as e:
     st.error(f"Erro ao carregar a planilha: {e}")
