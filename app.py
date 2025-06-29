@@ -28,7 +28,7 @@ try:
     config.columns = ['Index', 'Topico', 'ComentarioPadrao']
 
     # Botão de reset
-    if st.button("🧹 Limpar e Recomeçar"):
+    if st.button("🧹 Limpar"):
         for i in range(len(checklist)):
             st.session_state[f"resp_{i}"] = "OK"
             st.session_state[f"coment_{i}"] = ""
@@ -75,7 +75,7 @@ try:
             if r["Marcacao"] in ["X", "N/A"]:
                 base = config[config['Topico'] == r['Topico']]
                 comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
-                prefixo = "🟢 N/A:" if r["Marcacao"] == "N/A" else "🔴"
+                prefixo = "🟢 N/A:" if r["Marcacao"] == "N/A" else "❌"
                 comentario_final = f"{prefixo} {comentario_padrao}"
                 if r['ComentarioManual']:
                     comentario_final += f" ({r['ComentarioManual']})"
