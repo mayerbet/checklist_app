@@ -60,8 +60,8 @@ try:
         })
 
     if st.button("🧹 Limpar e Recomeçar"):
-    st.session_state["resetar"] = True
-    st.rerun()
+        st.session_state["resetar"] = True
+        st.rerun()
 
     # Geração dos comentários finais
     if st.button("✅ Gerar Comentários"):
