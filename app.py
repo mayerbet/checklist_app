@@ -13,6 +13,8 @@ def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
 try:
+    if "resetar" not in st.session_state:
+    st.session_state["resetar"] = False
     xls = carregar_planilha()
     checklist_df = pd.read_excel(xls, sheet_name="Checklist")
     config_df = pd.read_excel(xls, sheet_name="Config")
@@ -58,8 +60,8 @@ try:
         })
 
     if st.button("🧹 Limpar e Recomeçar"):
-        resetar_checklist()
-        st.experimental_rerun()
+    st.session_state["resetar"] = True
+    st.rerun()
 
     # Geração dos comentários finais
     if st.button("✅ Gerar Comentários"):
