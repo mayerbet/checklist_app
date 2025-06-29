@@ -131,8 +131,7 @@ try:
         """.format(texto=texto_editado.replace('"', '&quot;')), unsafe_allow_html=True)
 
 # ... (restante do código mantido)
-
-        else:
+    else:
             st.info("Nenhuma marcação relevante foi encontrada.")
 except Exception as e:
     st.error(f"Erro ao carregar a planilha: {e}")
