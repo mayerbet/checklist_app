@@ -11,6 +11,7 @@ st.markdown("Preencha o checklist abaixo. Comentários serão gerados automatica
 @st.cache_resource
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
+
 try:
     xls = carregar_planilha()
     checklist_df = pd.read_excel(xls, sheet_name="Checklist")
@@ -74,8 +75,9 @@ try:
         comentarios_final = [c[1] for c in comentarios_x + comentarios_na]
 
         if comentarios_final:
-            texto_final = "\n".join(comentarios_final)
-            st.code(texto_final, language="markdown")
+            texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
+
+            st.text_area("📝 Edite o texto gerado, se necessário: ", value=texto_final, height=400)
             st.download_button("💾 Baixar Comentários", data=texto_final, file_name="comentarios.txt")
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
