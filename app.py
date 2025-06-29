@@ -14,7 +14,7 @@ def carregar_planilha():
 
 try:
     if "resetar" not in st.session_state:
-    st.session_state["resetar"] = False
+        st.session_state["resetar"] = False
     xls = carregar_planilha()
     checklist_df = pd.read_excel(xls, sheet_name="Checklist")
     config_df = pd.read_excel(xls, sheet_name="Config")
