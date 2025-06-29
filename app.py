@@ -81,7 +81,7 @@ try:
 
         # ... (código anterior mantido)
 
-            if comentarios_final:
+        if comentarios_final:
             texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
 
             texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
