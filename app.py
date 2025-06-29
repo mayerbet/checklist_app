@@ -8,10 +8,9 @@ st.title("📊 Análise de Qualidade de Atendimentos - Checklist")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
 # Carrega a planilha fixa do repositório
-@st.cache_data
+@st.cache_resource
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
-
 try:
     xls = carregar_planilha()
     checklist_df = pd.read_excel(xls, sheet_name="Checklist")
