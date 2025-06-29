@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import io
-import pyperclip
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 
@@ -88,7 +87,11 @@ try:
             st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
             st.code(texto_editado, language="markdown")
 
-            st.markdown("<button onclick=\"navigator.clipboard.writeText(`""" + texto_editado.replace("`", "\`") + """`);\">📋 Copiar para Área de Transferência</button>", unsafe_allow_html=True)
+            # Botão copiar para área de transferência com HTML/JS seguro
+            st.markdown(f"""
+                <textarea id='comentarios' style='position:absolute; left:-1000px; top:-1000px'>{texto_editado}</textarea>
+                <button onclick="navigator.clipboard.writeText(document.getElementById('comentarios').value)">📋 Copiar para Área de Transferência</button>
+            """, unsafe_allow_html=True)
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
 except Exception as e:
