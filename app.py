@@ -53,7 +53,7 @@ try:
 
     # Botão para limpar a interface
     if st.button("🧹 Limpar e Recomeçar"):
-        st.experimental_rerun()
+        st.rerun()
 
     # Geração dos comentários finais
     if st.button("✅ Gerar Comentários"):
@@ -85,13 +85,13 @@ try:
             texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
 
             st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
-            st.code(texto_editado, language="markdown")
 
-            # Botão copiar para área de transferência com HTML/JS seguro
+            # Botão copiar com JS seguro e oculto
             st.markdown(f"""
-                <textarea id='comentarios' style='position:absolute; left:-1000px; top:-1000px'>{texto_editado}</textarea>
-                <button onclick="navigator.clipboard.writeText(document.getElementById('comentarios').value)">📋 Copiar para Área de Transferência</button>
+                <textarea id='comentarios' style='position:absolute; left:-1000px; top:-1000px;'>{texto_editado}</textarea>
+                <button onclick=\"navigator.clipboard.writeText(document.getElementById('comentarios').value)\">📋 Copiar para Área de Transferência</button>
             """, unsafe_allow_html=True)
+
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
 except Exception as e:
