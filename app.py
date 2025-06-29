@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import io
+import pyperclip
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 
@@ -51,6 +52,10 @@ try:
             "Indice": i  # salvar o índice para controle de prioridade
         })
 
+    # Botão para limpar a interface
+    if st.button("🧹 Limpar e Recomeçar"):
+        st.experimental_rerun()
+
     # Geração dos comentários finais
     if st.button("✅ Gerar Comentários"):
         st.subheader("📃 Resultado Final")
@@ -61,7 +66,8 @@ try:
             if r["Marcacao"] in ["X", "N/A"]:
                 base = config[config['Topico'] == r['Topico']]
                 comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
-                comentario_final = f"- {comentario_padrao}"
+                prefixo = "🟢 N/A:" if r["Marcacao"] == "N/A" else "🔴"
+                comentario_final = f"{prefixo} {comentario_padrao}"
                 if r['ComentarioManual']:
                     comentario_final += f" ({r['ComentarioManual']})"
 
@@ -77,8 +83,12 @@ try:
         if comentarios_final:
             texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
 
-            st.text_area("📝 Edite o texto gerado, se necessário: ", value=texto_final, height=400)
-            st.download_button("💾 Baixar Comentários", data=texto_final, file_name="comentarios.txt")
+            texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
+
+            st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
+            st.code(texto_editado, language="markdown")
+
+            st.markdown("<button onclick=\"navigator.clipboard.writeText(`""" + texto_editado.replace("`", "\`") + """`);\">📋 Copiar para Área de Transferência</button>", unsafe_allow_html=True)
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
 except Exception as e:
