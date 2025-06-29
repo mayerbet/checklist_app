@@ -24,6 +24,12 @@ try:
     config = config_df.iloc[1:].reset_index(drop=True)
     config.columns = ['Index', 'Topico', 'ComentarioPadrao']
 
+    # Função para resetar os estados dos widgets
+    def resetar_checklist():
+        for i in range(len(checklist)):
+            st.session_state[f"resp_{i}"] = "OK"
+            st.session_state[f"coment_{i}"] = ""
+
     # Interface do checklist
     respostas = []
     st.subheader("🔢 Checklist Interativo")
@@ -51,6 +57,10 @@ try:
             "Indice": i  # salvar o índice para controle de prioridade
         })
 
+    if st.button("🧹 Limpar e Recomeçar"):
+        resetar_checklist()
+        st.experimental_rerun()
+
     # Geração dos comentários finais
     if st.button("✅ Gerar Comentários"):
         st.subheader("📃 Resultado Final")
@@ -75,21 +85,19 @@ try:
         comentarios_x.sort(key=lambda x: (x[0] < len(respostas) - 5, x[0]))
         comentarios_final = [c[1] for c in comentarios_x + comentarios_na]
 
-        # ... (código anterior mantido)
-
         if comentarios_final:
             texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
 
             texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
 
-# Apenas para ter o botão de copiar como no st.code (funciona mesmo sem mostrar texto duplicado)
+            # Apenas para ter o botão de copiar como no st.code (funciona mesmo sem mostrar texto duplicado)
             with st.expander("📋 Clique aqui para copiar o texto gerado"):
-                 st.code(texto_editado, language="markdown")
+                st.code(texto_editado, language="markdown")
 
             st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
 
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
-# ... (restante do código mantido)
+
 except Exception as e:
     st.error(f"Erro ao carregar a planilha: {e}")
