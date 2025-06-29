@@ -79,18 +79,58 @@ try:
         comentarios_x.sort(key=lambda x: (x[0] < len(respostas) - 5, x[0]))
         comentarios_final = [c[1] for c in comentarios_x + comentarios_na]
 
-        if comentarios_final:
-            texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
+        # ... (código anterior mantido)
 
-            texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
+if comentarios_final:
+    texto_final = "\n\n".join(comentarios_final)
+    texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
 
-            st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
+    # Container para os botões
+    col1, col2, col3 = st.columns([1, 1, 3])
+    
+    with col1:
+        st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
+    
+    with col2:
+        # Botão de cópia com estilização melhorada
+        st.markdown("""
+        <div style="position:relative;">
+            <textarea id="comentarios" style="position:absolute;left:-9999px;">{texto}</textarea>
+            <button onclick="copiarTexto()" style="
+                background-color: #4CAF50;
+                color: white;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: bold;
+            ">
+                📋 Copiar
+            </button>
+        </div>
+        
+        <script>
+            function copiarTexto() {{
+                var copyText = document.getElementById('comentarios');
+                copyText.select();
+                document.execCommand('copy');
+                
+                // Feedback visual
+                var btn = event.currentTarget;
+                btn.innerHTML = '✓ Copiado!';
+                btn.style.backgroundColor = '#2E7D32';
+                setTimeout(function() {{
+                    btn.innerHTML = '📋 Copiar';
+                    btn.style.backgroundColor = '#4CAF50';
+                }}, 2000);
+            }}
+        </script>
+        """.format(texto=texto_editado.replace('"', '&quot;')), unsafe_allow_html=True)
 
-            # Botão copiar com JS seguro e oculto
-            st.markdown(f"""
-                <textarea id='comentarios' style='position:absolute; left:-1000px; top:-1000px;'>{texto_editado}</textarea>
-                <button onclick=\"navigator.clipboard.writeText(document.getElementById('comentarios').value)\">📋 Copiar para Área de Transferência</button>
-            """, unsafe_allow_html=True)
+# ... (restante do código mantido)
 
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
