@@ -125,7 +125,7 @@ try:
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
         </script>
-        <button id="scroll-top-btn" onclick="scrollToTop()">🔝 Voltar ao Topo</button>
+        <button id="scroll-top-btn" onclick="scrollToTop()">🔝Topo</button>
     """, unsafe_allow_html=True)
 
 except Exception as e:
