@@ -109,7 +109,7 @@ try:
     st.markdown("""
         <div style="
         position: fixed;
-        bottom: 140px;
+        bottom: 100px;
         right: 20px;
         z-index: 9999;
         background-color: #0E1117;
