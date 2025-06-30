@@ -118,7 +118,7 @@ try:
 
 
 
-            st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # Geração dos comentários finais
     if st.button("✅ Gerar Relatório"):
