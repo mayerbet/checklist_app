@@ -106,8 +106,8 @@ try:
             st.info("Nenhuma marcação relevante foi encontrada.")
 
     # Botão fixo para voltar ao topo
-       st.markdown("""
-<div style="
+         st.markdown("""
+         <div style="
     position: fixed;
     bottom: 140px;
     right: 20px;
