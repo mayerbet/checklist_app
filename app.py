@@ -30,7 +30,7 @@ try:
     config.columns = ['Index', 'Topico', 'ComentarioPadrao']
 
     # Botão de reset
-    if st.button("🧹 Limpar e Recomeçar"):
+    if st.button("🧹 Limpar"):
         for i in range(len(checklist)):
             st.session_state[f"resp_{i}"] = "OK"
             st.session_state[f"coment_{i}"] = ""
