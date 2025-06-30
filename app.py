@@ -70,8 +70,8 @@ try:
         })
 
     # Geração dos comentários finais
-    if st.button("✅ Relatório"):
-        st.subheader("📃 Resultado Final")
+    if st.button("✅Gerar Relatório"):
+        st.subheader("📃 Relatório final")
         comentarios = []
 
         for r in respostas:
