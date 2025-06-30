@@ -99,10 +99,7 @@ try:
     if st.session_state["texto_final"]:
         texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=st.session_state["texto_final"], height=400)
 
-        if st.button("💾 Salvar Edição"):
-            st.session_state["texto_final"] = texto_editado
-
-    # Botão fixo para voltar ao topo
+            # Botão fixo para voltar ao topo
     st.markdown("""
         <div style="
         position: fixed;
