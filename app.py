@@ -106,7 +106,7 @@ try:
             st.info("Nenhuma marcação relevante foi encontrada.")
 
     # Botão fixo para voltar ao topo
-   st.markdown("""
+        st.markdown("""
 <div style='position: fixed; bottom: 120px; right: 20px; z-index: 9999;'>
     <a href='#top'>
         <button style='padding: 0.6rem 1rem; background-color: #0E1117; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px;'>
