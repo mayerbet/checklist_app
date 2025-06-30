@@ -4,7 +4,7 @@ import io
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
-st.title("📊 Análise de Qualidade de Atendimentos - Checklist")
+st.title("📊 Guia de Qualidade")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
 
@@ -38,7 +38,7 @@ try:
 
     # Interface do checklist
     respostas = []
-    st.subheader("🔢 Checklist Interativo")
+    st.subheader("🔢 Checklist")
     for i, row in checklist.iterrows():
         topico = row['Topico']
         st.markdown(f"### {topico}")
@@ -68,7 +68,7 @@ try:
         })
 
     # Geração dos comentários finais
-    if st.button("✅ Gerar Comentários"):
+    if st.button("✅ Gerar Relatório"):
         st.subheader("📃 Resultado Final")
         comentarios_x = []
         comentarios_na = []
@@ -77,7 +77,7 @@ try:
             if r["Marcacao"] in ["X", "N/A"]:
                 base = config[config['Topico'] == r['Topico']]
                 comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
-                prefixo = "🟢 N/A:" if r["Marcacao"] == "N/A" else "🔴"
+                prefixo = "🟡 N/A:" if r["Marcacao"] == "N/A" else "❌"
                 comentario_final = f"{prefixo} {comentario_padrao}"
                 if r['ComentarioManual']:
                     comentario_final += f" ({r['ComentarioManual']})"
