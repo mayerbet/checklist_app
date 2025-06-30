@@ -6,6 +6,8 @@ st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 
 st.title("📊 Análise de Qualidade de Atendimentos - Checklist")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
+st.markdown("<a name='top'></a>", unsafe_allow_html=True)
+
 
 # Carrega a planilha fixa do repositório
 @st.cache_resource
@@ -104,29 +106,16 @@ try:
             st.info("Nenhuma marcação relevante foi encontrada.")
 
     # Botão fixo para voltar ao topo
-    st.markdown("""
-        <style>
-        #scroll-top-btn {
-            position: fixed;
-            bottom: 180px;
-            right: 20px;
-            z-index: 9999;
-            padding: 0.6rem 1rem;
-            background-color: #0E1117;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        </style>
-        <script>
-        function scrollToTop() {
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-        </script>
-        <button id="scroll-top-btn" onclick="scrollToTop()">🔝Topo</button>
-    """, unsafe_allow_html=True)
+   st.markdown("""
+<div style='position: fixed; bottom: 120px; right: 20px; z-index: 9999;'>
+    <a href='#top'>
+        <button style='padding: 0.6rem 1rem; background-color: #0E1117; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px;'>
+            🔝 Voltar ao Topo
+        </button>
+    </a>
+</div>
+""", unsafe_allow_html=True)
+
 
 except Exception as e:
     st.error(f"Erro ao carregar a planilha: {e}")
