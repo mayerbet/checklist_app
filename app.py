@@ -4,7 +4,7 @@ import io
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 
-st.title("📊QA análise - Checklist")
+st.title("📊 Análise de Qualidade de Atendimentos - Checklist")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
 # Carrega a planilha fixa do repositório
@@ -28,7 +28,7 @@ try:
     config.columns = ['Index', 'Topico', 'ComentarioPadrao']
 
     # Botão de reset
-    if st.button("🧹 Limpar"):
+    if st.button("🧹 Limpar e Recomeçar"):
         for i in range(len(checklist)):
             st.session_state[f"resp_{i}"] = "OK"
             st.session_state[f"coment_{i}"] = ""
@@ -75,7 +75,7 @@ try:
             if r["Marcacao"] in ["X", "N/A"]:
                 base = config[config['Topico'] == r['Topico']]
                 comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
-                prefixo = "🟢 N/A:" if r["Marcacao"] == "N/A" else "❌"
+                prefixo = "🟢 N/A:" if r["Marcacao"] == "N/A" else "🔴"
                 comentario_final = f"{prefixo} {comentario_padrao}"
                 if r['ComentarioManual']:
                     comentario_final += f" ({r['ComentarioManual']})"
@@ -103,25 +103,30 @@ try:
         else:
             st.info("Nenhuma marcação relevante foi encontrada.")
 
+    # Botão fixo para voltar ao topo
+    st.markdown("""
+        <style>
+        #scroll-top-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 9999;
+            padding: 0.6rem 1rem;
+            background-color: #0E1117;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        </style>
+        <script>
+        function scrollToTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+        </script>
+        <button id="scroll-top-btn" onclick="scrollToTop()">🔝 Voltar ao Topo</button>
+    """, unsafe_allow_html=True)
+
 except Exception as e:
     st.error(f"Erro ao carregar a planilha: {e}")
-#botão voltar ao topo
-st.markdown("""
-    <style>
-    #scroll-top-btn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 100;
-        padding: 0.5rem 1rem;
-        background-color: #0E1117;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    </style>
-    <button id="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">🔝 Voltar ao Topo</button>
-""", unsafe_allow_html=True)
-
