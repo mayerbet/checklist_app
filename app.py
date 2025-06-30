@@ -7,8 +7,6 @@ st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.title("📋 Análise de QA")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
-
-
 # Carrega a planilha fixa do repositório
 @st.cache_resource
 def carregar_planilha():
@@ -17,6 +15,9 @@ def carregar_planilha():
 try:
     if "resetar" not in st.session_state:
         st.session_state["resetar"] = False
+
+    if "texto_final" not in st.session_state:
+        st.session_state["texto_final"] = ""
 
     xls = carregar_planilha()
     checklist_df = pd.read_excel(xls, sheet_name="Checklist")
@@ -34,6 +35,7 @@ try:
         for i in range(len(checklist)):
             st.session_state[f"resp_{i}"] = "OK"
             st.session_state[f"coment_{i}"] = ""
+        st.session_state["texto_final"] = ""
         st.rerun()
 
     # Interface do checklist
@@ -68,10 +70,9 @@ try:
         })
 
     # Geração dos comentários finais
-    if st.button("✅ Gerar Relatório"):
+    if st.button("✅ Relatório"):
         st.subheader("📃 Resultado Final")
-        comentarios_x = []
-        comentarios_na = []
+        comentarios = []
 
         for r in respostas:
             if r["Marcacao"] in ["X", "N/A"]:
@@ -81,29 +82,26 @@ try:
                 comentario_final = f"{prefixo} {comentario_padrao}"
                 if r['ComentarioManual']:
                     comentario_final += f" ({r['ComentarioManual']})"
+                comentarios.append((r["Indice"], comentario_final, r["Marcacao"]))
 
-                if r["Marcacao"] == "X":
-                    comentarios_x.append((r["Indice"], comentario_final))
-                else:
-                    comentarios_na.append((r["Indice"], comentario_final))
+        # Separar comentários X e N/A
+        comentarios_x = [c for c in comentarios if c[2] == "X"]
+        comentarios_na = [c for c in comentarios if c[2] == "N/A"]
 
-        # Ordenação: prioriza os últimos 5 tópicos se marcados com X
-        comentarios_x.sort(key=lambda x: (x[0] < len(respostas) - 5, x[0]))
-        comentarios_final = [c[1] for c in comentarios_x + comentarios_na]
+        # Priorizar os últimos 5 tópicos com X
+        ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
+        prioridade = [c for c in comentarios_x if c[0] in ultimos_5_idx]
+        restantes_x = [c for c in comentarios_x if c[0] not in ultimos_5_idx]
+
+        comentarios_final = prioridade + restantes_x + comentarios_na
+        comentarios_final = [c[1] for c in comentarios_final]
 
         if comentarios_final:
-            texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
+            st.session_state["texto_final"] = "\n\n".join(comentarios_final)
 
-            texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
-
-            # Apenas para ter o botão de copiar como no st.code (funciona mesmo sem mostrar texto duplicado)
-            with st.expander("📋 Clique aqui para copiar o texto gerado"):
-                st.code(texto_editado, language="markdown")
-
-            st.download_button("💾 Baixar Comentários", data=texto_editado, file_name="comentarios.txt")
-
-        else:
-            st.info("Nenhuma marcação relevante foi encontrada.")
+    # Mostrar texto final se existir
+    if st.session_state["texto_final"]:
+        texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=st.session_state["texto_final"], height=400)
 
     # Botão fixo para voltar ao topo
     st.markdown("""
