@@ -4,7 +4,7 @@ import io
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
-st.title("📊 Guia de Qualidade")
+st.title("📋 Guia de Qualidade")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
 
