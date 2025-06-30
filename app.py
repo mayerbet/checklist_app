@@ -3,6 +3,45 @@ import pandas as pd
 import io
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
+# Estilo global
+st.markdown("""
+    <style>
+    /* Fonte padrão e tamanho base */
+    html, body, [class*="css"] {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 16px;
+        color: #333333;
+    }
+
+    /* Títulos */
+    h1, h2, h3 {
+        color: #0E5C86;
+        margin-bottom: 0.3rem;
+    }
+
+    /* Caixa do checklist */
+    .checklist-box {
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        padding: 1.2rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Botões Streamlit */
+    button[kind="primary"] {
+        background-color: #0E5C86;
+        color: white;
+        border-radius: 10px;
+    }
+
+    /* Alinhamento dos inputs */
+    input, textarea {
+        border-radius: 6px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+#fim do estilo global
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.title("📋 Análise de QA?")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
@@ -12,23 +51,44 @@ st.markdown("Preencha o checklist abaixo. Comentários serão gerados automatica
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-try:
-    if "resetar" not in st.session_state:
-        st.session_state["resetar"] = False
+respostas = []
+st.subheader("🔢 Checklist")
 
-    if "texto_final" not in st.session_state:
-        st.session_state["texto_final"] = ""
+for i, row in checklist.iterrows():
+    topico = row['Topico']
+    
+    with st.container():
+        st.markdown(f"""<div class="checklist-box">""", unsafe_allow_html=True)
+        st.markdown(f"### {topico}")
+        
+        col1, col2 = st.columns([1, 3])
+        resposta_default = st.session_state.get(f"resp_{i}", "OK")
+        comentario_default = st.session_state.get(f"coment_{i}", "")
 
-    xls = carregar_planilha()
-    checklist_df = pd.read_excel(xls, sheet_name="Checklist")
-    config_df = pd.read_excel(xls, sheet_name="Config")
+        with col1:
+            resposta = st.radio(
+                label=f"Selecione para o tópico {i+1}",
+                options=['OK', 'X', 'N/A'],
+                index=['OK', 'X', 'N/A'].index(resposta_default),
+                key=f"resp_{i}"
+            )
+        with col2:
+            comentario_manual = ""
+            if resposta != 'OK':
+                comentario_manual = st.text_input(
+                    f"Comentário adicional (opcional)", 
+                    key=f"coment_{i}", 
+                    value=comentario_default
+                )
 
-    # Limpeza: pulando o cabeçalho extra
-    checklist = checklist_df.iloc[1:].reset_index(drop=True)
-    checklist.columns = ['Index', 'Topico', 'Marcacao', 'Comentario', 'Observacoes', 'Relatorio']
+        respostas.append({
+            "Topico": topico,
+            "Marcacao": resposta,
+            "ComentarioManual": comentario_manual,
+            "Indice": i
+        })
 
-    config = config_df.iloc[1:].reset_index(drop=True)
-    config.columns = ['Index', 'Topico', 'ComentarioPadrao']
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # Botão de reset
     if st.button("🧹 Limpar"):
