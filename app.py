@@ -70,8 +70,8 @@ try:
         })
 
     # Geração dos comentários finais
-    if st.button("✅Gerar Relatório"):
-        st.subheader("📃 Relatório final")
+    if st.button("✅ Gerar Relatório"):
+        st.subheader("📃 Resultado Final")
         comentarios = []
 
         for r in respostas:
@@ -84,17 +84,13 @@ try:
                     comentario_final += f" ({r['ComentarioManual']})"
                 comentarios.append((r["Indice"], comentario_final, r["Marcacao"]))
 
-        # Separar comentários X e N/A
-        comentarios_x = [c for c in comentarios if c[2] == "X"]
-        comentarios_na = [c for c in comentarios if c[2] == "N/A"]
-
-        # Priorizar os últimos 5 tópicos com X
+        # Corrigir ordenação: priorizar somente os X dos últimos 5 tópicos
         ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
-        prioridade = [c for c in comentarios_x if c[0] in ultimos_5_idx]
-        restantes_x = [c for c in comentarios_x if c[0] not in ultimos_5_idx]
+        comentarios_prioritarios = [c for c in comentarios if c[0] in ultimos_5_idx and c[2] == "X"]
+        comentarios_restantes = [c for c in comentarios if c not in comentarios_prioritarios]
 
-        comentarios_final = prioridade + restantes_x + comentarios_na
-        comentarios_final = [c[1] for c in comentarios_final]
+        comentarios_ordenados = comentarios_prioritarios + comentarios_restantes
+        comentarios_final = [c[1] for c in comentarios_ordenados]
 
         if comentarios_final:
             st.session_state["texto_final"] = "\n\n".join(comentarios_final)
@@ -102,6 +98,9 @@ try:
     # Mostrar texto final se existir
     if st.session_state["texto_final"]:
         texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=st.session_state["texto_final"], height=400)
+
+        if st.button("💾 Salvar Edição"):
+            st.session_state["texto_final"] = texto_editado
 
     # Botão fixo para voltar ao topo
     st.markdown("""
