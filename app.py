@@ -81,40 +81,41 @@ try:
     st.subheader("🔢 Checklist")
 
     for i, row in checklist.iterrows():
-    topico = row['Topico']
-    resposta_default = st.session_state.get(f"resp_{i}", "OK")
-    comentario_default = st.session_state.get(f"coment_{i}", "")
+        topico = row['Topico']
+        resposta_default = st.session_state.get(f"resp_{i}", "OK")
+        comentario_default = st.session_state.get(f"coment_{i}", "")
 
-    with st.container():
-        st.markdown("""<div class="checklist-box">""", unsafe_allow_html=True)
+        with st.container():
+            st.markdown("""<div class="checklist-box">""", unsafe_allow_html=True)
         
-        st.markdown(f"### {topico}")
+            st.markdown(f"### {topico}")
 
-        col1, col2 = st.columns([1, 3])
-        with col1:
-            resposta = st.radio(
-                label=f"Selecione para o tópico {i+1}",
-                options=['OK', 'X', 'N/A'],
-                index=['OK', 'X', 'N/A'].index(resposta_default),
-                key=f"resp_{i}"
-            )
-        with col2:
-            comentario_manual = ""
-            if resposta != 'OK':
-                comentario_manual = st.text_input(
-                    f"Comentário adicional (opcional)", 
-                    key=f"coment_{i}", 
-                    value=comentario_default
+            col1, col2 = st.columns([1, 3])
+            with col1:
+                resposta = st.radio(
+                    label=f"Selecione para o tópico {i+1}",
+                    options=['OK', 'X', 'N/A'],
+                    index=['OK', 'X', 'N/A'].index(resposta_default),
+                    key=f"resp_{i}"
                 )
+            with col2:
+                comentario_manual = ""
+                if resposta != 'OK':
+                    comentario_manual = st.text_input(
+                        f"Comentário adicional (opcional)", 
+                        key=f"coment_{i}", 
+                        value=comentario_default
+                    )
 
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-    respostas.append({
-        "Topico": topico,
-        "Marcacao": resposta,
-        "ComentarioManual": comentario_manual,
-        "Indice": i
-    })
+        respostas.append({
+            "Topico": topico,
+            "Marcacao": resposta,
+            "ComentarioManual": comentario_manual,
+            "Indice": i
+        })
+
 
 
             st.markdown("</div>", unsafe_allow_html=True)
