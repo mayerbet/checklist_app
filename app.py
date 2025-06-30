@@ -19,15 +19,6 @@ st.markdown("""
         margin-bottom: 0.3rem;
     }
 
-    /* Caixa do checklist */
-    .checklist-box {
-        background-color: #f9f9f9;
-        border-radius: 10px;
-        padding: 1.2rem;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        margin-bottom: 1.5rem;
-    }
-
     /* Botões Streamlit */
     button[kind="primary"] {
         background-color: #0E5C86;
@@ -41,7 +32,20 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-#fim do estilo global
+
+# Estilo adicional para as caixas de checklist
+st.markdown("""
+    <style>
+    .checklist-wrapper {
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        padding: 1.2rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.title("📋 Análise de QA?")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
@@ -86,8 +90,8 @@ try:
         comentario_default = st.session_state.get(f"coment_{i}", "")
 
         with st.container():
-            st.markdown("""<div class="checklist-box">""", unsafe_allow_html=True)
-        
+            st.markdown('<div class="checklist-wrapper">', unsafe_allow_html=True)
+
             st.markdown(f"### {topico}")
 
             col1, col2 = st.columns([1, 3])
@@ -102,12 +106,12 @@ try:
                 comentario_manual = ""
                 if resposta != 'OK':
                     comentario_manual = st.text_input(
-                        f"Comentário adicional (opcional)", 
-                        key=f"coment_{i}", 
+                        f"Comentário adicional (opcional)",
+                        key=f"coment_{i}",
                         value=comentario_default
                     )
 
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
         respostas.append({
             "Topico": topico,
@@ -115,10 +119,6 @@ try:
             "ComentarioManual": comentario_manual,
             "Indice": i
         })
-
-
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
     # Geração dos comentários finais
     if st.button("✅ Gerar Relatório"):
