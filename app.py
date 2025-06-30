@@ -51,44 +51,23 @@ st.markdown("Preencha o checklist abaixo. Comentários serão gerados automatica
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-respostas = []
-st.subheader("🔢 Checklist")
+try:
+    if "resetar" not in st.session_state:
+        st.session_state["resetar"] = False
 
-for i, row in checklist.iterrows():
-    topico = row['Topico']
-    
-    with st.container():
-        st.markdown(f"""<div class="checklist-box">""", unsafe_allow_html=True)
-        st.markdown(f"### {topico}")
-        
-        col1, col2 = st.columns([1, 3])
-        resposta_default = st.session_state.get(f"resp_{i}", "OK")
-        comentario_default = st.session_state.get(f"coment_{i}", "")
+    if "texto_final" not in st.session_state:
+        st.session_state["texto_final"] = ""
 
-        with col1:
-            resposta = st.radio(
-                label=f"Selecione para o tópico {i+1}",
-                options=['OK', 'X', 'N/A'],
-                index=['OK', 'X', 'N/A'].index(resposta_default),
-                key=f"resp_{i}"
-            )
-        with col2:
-            comentario_manual = ""
-            if resposta != 'OK':
-                comentario_manual = st.text_input(
-                    f"Comentário adicional (opcional)", 
-                    key=f"coment_{i}", 
-                    value=comentario_default
-                )
+    xls = carregar_planilha()
+    checklist_df = pd.read_excel(xls, sheet_name="Checklist")
+    config_df = pd.read_excel(xls, sheet_name="Config")
 
-        respostas.append({
-            "Topico": topico,
-            "Marcacao": resposta,
-            "ComentarioManual": comentario_manual,
-            "Indice": i
-        })
+    # Limpeza: pulando o cabeçalho extra
+    checklist = checklist_df.iloc[1:].reset_index(drop=True)
+    checklist.columns = ['Index', 'Topico', 'Marcacao', 'Comentario', 'Observacoes', 'Relatorio']
 
-        st.markdown("</div>", unsafe_allow_html=True)
+    config = config_df.iloc[1:].reset_index(drop=True)
+    config.columns = ['Index', 'Topico', 'ComentarioPadrao']
 
     # Botão de reset
     if st.button("🧹 Limpar"):
@@ -98,36 +77,44 @@ for i, row in checklist.iterrows():
         st.session_state["texto_final"] = ""
         st.rerun()
 
-    # Interface do checklist
     respostas = []
     st.subheader("🔢 Checklist")
+
     for i, row in checklist.iterrows():
         topico = row['Topico']
-        st.markdown(f"### {topico}")
 
-        col1, col2 = st.columns([1, 3])
+        with st.container():
+            st.markdown(f"""<div class="checklist-box">""", unsafe_allow_html=True)
+            st.markdown(f"### {topico}")
 
-        resposta_default = st.session_state.get(f"resp_{i}", "OK")
-        comentario_default = st.session_state.get(f"coment_{i}", "")
+            col1, col2 = st.columns([1, 3])
+            resposta_default = st.session_state.get(f"resp_{i}", "OK")
+            comentario_default = st.session_state.get(f"coment_{i}", "")
 
-        with col1:
-            resposta = st.radio(
-                label=f"Selecione para o tópico {i+1}",
-                options=['OK', 'X', 'N/A'],
-                index=['OK', 'X', 'N/A'].index(resposta_default),
-                key=f"resp_{i}"
-            )
-        with col2:
-            comentario_manual = ""
-            if resposta != 'OK':
-                comentario_manual = st.text_input(f"Comentário adicional (opcional)", key=f"coment_{i}", value=comentario_default)
+            with col1:
+                resposta = st.radio(
+                    label=f"Selecione para o tópico {i+1}",
+                    options=['OK', 'X', 'N/A'],
+                    index=['OK', 'X', 'N/A'].index(resposta_default),
+                    key=f"resp_{i}"
+                )
+            with col2:
+                comentario_manual = ""
+                if resposta != 'OK':
+                    comentario_manual = st.text_input(
+                        f"Comentário adicional (opcional)", 
+                        key=f"coment_{i}", 
+                        value=comentario_default
+                    )
 
-        respostas.append({
-            "Topico": topico,
-            "Marcacao": resposta,
-            "ComentarioManual": comentario_manual,
-            "Indice": i  # salvar o índice para controle de prioridade
-        })
+            respostas.append({
+                "Topico": topico,
+                "Marcacao": resposta,
+                "ComentarioManual": comentario_manual,
+                "Indice": i
+            })
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
     # Geração dos comentários finais
     if st.button("✅ Gerar Relatório"):
@@ -159,7 +146,7 @@ for i, row in checklist.iterrows():
     if st.session_state["texto_final"]:
         texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=st.session_state["texto_final"], height=400)
 
-            # Botão fixo para voltar ao topo
+    # Botão fixo para voltar ao topo
     st.markdown("""
         <div style="
         position: fixed;
