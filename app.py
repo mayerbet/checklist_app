@@ -106,7 +106,7 @@ try:
 except Exception as e:
     st.error(f"Erro ao carregar a planilha: {e}")
 #botão voltar ao topo
-st.markdown(\"\"\"
+st.markdown("""
     <style>
     #scroll-top-btn {
         position: fixed;
@@ -123,5 +123,5 @@ st.markdown(\"\"\"
     }
     </style>
     <button id="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">🔝 Voltar ao Topo</button>
-\"\"\", unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
