@@ -60,12 +60,14 @@ try:
         with col2:
             comentario_manual = ""
                 if resposta != 'OK':
+                    if f"coment_{i}" not in st.session_state:
+                        st.session_state[f"coment_{i}"] = comentario_default
+
                     comentario_manual = st.text_area(
-                        label=f"Comentário adicional (opcional)", 
-                        key=f"coment_{i}", 
-                        value=comentario_default,
-                        height=100,
-                        placeholder="Digite aqui...",
+                        f"Comentário adicional (opcional)",
+                        value=st.session_state[f"coment_{i}"],
+                        key=f"coment_{i}_text_area",
+                        height=100
                     )
 
 
