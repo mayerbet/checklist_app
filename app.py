@@ -1,33 +1,39 @@
 import streamlit as st
 import pandas as pd
-import io
-import os
+import sqlite3
 from datetime import datetime
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
+# st.image("bet365-logo-0.png", width=300)
+# st.markdown("---")
 st.title("📋 Análise de QA")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
+# Função para carregar planilha
 @st.cache_resource
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-def salvar_historico(data_analise, usuario, texto_gerado):
-    historico_path = "historico_analises.csv"
-    nova_linha = pd.DataFrame([{
-        "Data": data_analise,
-        "Usuário": usuario,
-        "Resultado": texto_gerado
-    }])
-    if os.path.exists(historico_path):
-        historico_existente = pd.read_csv(historico_path)
-        historico_atualizado = pd.concat([historico_existente, nova_linha], ignore_index=True)
-    else:
-        historico_atualizado = nova_linha
-    historico_atualizado.to_csv(historico_path, index=False)
+# Função para conectar e garantir existência da tabela
+def iniciar_banco():
+    conn = sqlite3.connect("historico.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS avaliacoes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            data TEXT,
+            atendente TEXT,
+            contato_id TEXT,
+            texto_final TEXT
+        )
+    """)
+    conn.commit()
+    return conn
 
 try:
+    conn = iniciar_banco()
+
     if "resetar" not in st.session_state:
         st.session_state["resetar"] = False
 
@@ -53,7 +59,9 @@ try:
     for i, row in checklist.iterrows():
         topico = row['Topico']
         st.markdown(f"### {topico}")
+
         col1, col2 = st.columns([1, 3])
+
         resposta_default = st.session_state.get(f"resp_{i}", "OK")
         comentario_default = st.session_state.get(f"coment_{i}", "")
 
@@ -87,6 +95,7 @@ try:
     if st.button("✅ Gerar Relatório"):
         st.subheader("📃 Resultado Final")
         comentarios = []
+
         for r in respostas:
             if r["Marcacao"] in ["X", "N/A"]:
                 base = config[config['Topico'] == r['Topico']]
@@ -105,9 +114,22 @@ try:
         comentarios_final = [c[1] for c in comentarios_final]
 
         if comentarios_final:
-            texto_gerado = "\n\n".join(comentarios_final)
-            st.session_state["texto_final"] = texto_gerado
-            salvar_historico(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "usuario_local", texto_gerado)
+            st.session_state["texto_final"] = "\n\n".join(comentarios_final)
+
+            with st.form("salvar_dados"):
+                st.markdown("### 💾 Salvar Análise no Histórico")
+                nome = st.text_input("Nome do atendente:", key="atendente")
+                contato_id = st.text_input("ID do atendimento:", key="contato_id")
+                salvar = st.form_submit_button("📥 Salvar no Histórico")
+
+                if salvar and nome and contato_id:
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        INSERT INTO avaliacoes (data, atendente, contato_id, texto_final)
+                        VALUES (?, ?, ?, ?)
+                    """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nome, contato_id, st.session_state["texto_final"]))
+                    conn.commit()
+                    st.success("✔️ Análise salva com sucesso!")
 
     if st.session_state.get("texto_final"):
         if "texto_editado" not in st.session_state:
@@ -120,13 +142,6 @@ try:
         )
     else:
         st.info("Nenhuma marcação relevante foi encontrada.")
-
-    if st.checkbox("📂 Ver histórico de análises"):
-        if os.path.exists("historico_analises.csv"):
-            historico = pd.read_csv("historico_analises.csv")
-            st.dataframe(historico)
-        else:
-            st.info("Nenhum histórico encontrado ainda.")
 
     st.markdown("""
         <div style="
@@ -146,4 +161,4 @@ try:
     """, unsafe_allow_html=True)
 
 except Exception as e:
-    st.error(f"Erro ao carregar a planilha: {e}")
+    st.error(f"Erro ao carregar a planilha ou banco de dados: {e}")
