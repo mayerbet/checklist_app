@@ -59,13 +59,15 @@ try:
             )
         with col2:
             comentario_manual = ""
-            if resposta != 'OK':
-                comentario_manual = st.text_area(
-                    f"Comentário adicional (opcional)",
-                    key=f"coment_{i}",
-                    value=comentario_default,
-                    height=100  # ou ajuste conforme desejar
-                )
+                if resposta != 'OK':
+                    comentario_manual = st.text_area(
+                        label=f"Comentário adicional (opcional)", 
+                        key=f"coment_{i}", 
+                        value=comentario_default,
+                        height=100,
+                        placeholder="Digite aqui...",
+                    )
+
 
         respostas.append({
             "Topico": topico,
