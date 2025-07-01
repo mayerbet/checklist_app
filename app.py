@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
-import sqlite3
-from datetime import datetime
+import io
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
@@ -10,30 +9,11 @@ st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.title("📋 Análise de QA")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
-# Função para carregar planilha
 @st.cache_resource
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-# Função para conectar e garantir existência da tabela
-def iniciar_banco():
-    conn = sqlite3.connect("historico.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS avaliacoes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            data TEXT,
-            atendente TEXT,
-            contato_id TEXT,
-            texto_final TEXT
-        )
-    """)
-    conn.commit()
-    return conn
-
 try:
-    conn = iniciar_banco()
-
     if "resetar" not in st.session_state:
         st.session_state["resetar"] = False
 
@@ -116,21 +96,6 @@ try:
         if comentarios_final:
             st.session_state["texto_final"] = "\n\n".join(comentarios_final)
 
-            with st.form("salvar_dados"):
-                st.markdown("### 💾 Salvar no Histórico")
-                nome = st.text_input("Nome do atendente:", key="atendente")
-                contato_id = st.text_input("ID do atendimento:", key="contato_id")
-                salvar = st.form_submit_button("Salvar")
-
-                if salvar and nome and contato_id:
-                    cursor = conn.cursor()
-                    cursor.execute("""
-                        INSERT INTO avaliacoes (data, atendente, contato_id, texto_final)
-                        VALUES (?, ?, ?, ?)
-                    """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nome, contato_id, st.session_state["texto_final"]))
-                    conn.commit()
-                    st.success("✔️ Análise salva com sucesso!")
-
     if st.session_state.get("texto_final"):
         if "texto_editado" not in st.session_state:
             st.session_state["texto_editado"] = st.session_state["texto_final"]
@@ -142,17 +107,6 @@ try:
         )
     else:
         st.info("Nenhuma marcação relevante foi encontrada.")
-
-        st.markdown("---")
-    st.subheader("📚 Histórico")
-
-    historico_df = pd.read_sql_query("SELECT data, atendente, contato_id FROM avaliacoes ORDER BY data DESC", conn)
-
-    if not historico_df.empty:
-        st.dataframe(historico_df, use_container_width=True)
-    else:
-        st.info("Nenhuma análise salva ainda.")
-
 
     st.markdown("""
         <div style="
@@ -172,4 +126,4 @@ try:
     """, unsafe_allow_html=True)
 
 except Exception as e:
-    st.error(f"Erro ao carregar a planilha ou banco de dados: {e}")
+    st.error(f"Erro ao carregar a planilha: {e}")
