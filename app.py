@@ -72,8 +72,8 @@ try:
             "Indice": i
         })
 
-    if st.button("✅ Gerar Relatório"):
-        st.subheader("📃 Resultado Final")
+    if st.button("✅"):
+        st.subheader("Relatório")
         comentarios = []
 
         for r in respostas:
@@ -101,7 +101,7 @@ try:
             st.session_state["texto_editado"] = st.session_state["texto_final"]
 
         st.session_state["texto_editado"] = st.text_area(
-            "📝 Edite o texto gerado, se necessário:",
+            "📝 Edite, se necessário:",
             value=st.session_state["texto_editado"],
             height=400
         )
