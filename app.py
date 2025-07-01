@@ -72,7 +72,7 @@ try:
             "Indice": i
         })
 
-    if st.button("✅"):
+    if st.button("Concluído"):
         st.subheader("Relatório")
         comentarios = []
 
