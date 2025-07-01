@@ -117,10 +117,10 @@ try:
             st.session_state["texto_final"] = "\n\n".join(comentarios_final)
 
             with st.form("salvar_dados"):
-                st.markdown("### 💾 Salvar Análise no Histórico")
+                st.markdown("### 💾 Salvar no Histórico")
                 nome = st.text_input("Nome do atendente:", key="atendente")
                 contato_id = st.text_input("ID do atendimento:", key="contato_id")
-                salvar = st.form_submit_button("📥 Salvar no Histórico")
+                salvar = st.form_submit_button("Salvar")
 
                 if salvar and nome and contato_id:
                     cursor = conn.cursor()
@@ -144,7 +144,7 @@ try:
         st.info("Nenhuma marcação relevante foi encontrada.")
 
         st.markdown("---")
-    st.subheader("📚 Histórico de Análises Salvas")
+    st.subheader("📚 Histórico")
 
     historico_df = pd.read_sql_query("SELECT data, atendente, contato_id FROM avaliacoes ORDER BY data DESC", conn)
 
