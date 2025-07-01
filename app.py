@@ -143,6 +143,17 @@ try:
     else:
         st.info("Nenhuma marcação relevante foi encontrada.")
 
+        st.markdown("---")
+    st.subheader("📚 Histórico de Análises Salvas")
+
+    historico_df = pd.read_sql_query("SELECT data, atendente, contato_id FROM avaliacoes ORDER BY data DESC", conn)
+
+    if not historico_df.empty:
+        st.dataframe(historico_df, use_container_width=True)
+    else:
+        st.info("Nenhuma análise salva ainda.")
+
+
     st.markdown("""
         <div style="
         position: fixed;
