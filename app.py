@@ -64,7 +64,7 @@ try:
                     f"Comentário adicional (opcional)",
                     key=f"coment_{i}",
                     value=comentario_default,
-                    height=80  # ou ajuste conforme desejar
+                    height=100  # ou ajuste conforme desejar
                 )
 
         respostas.append({
