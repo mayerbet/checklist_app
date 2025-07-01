@@ -70,33 +70,42 @@ try:
         })
 
     # Geração dos comentários finais
-    if st.button("✅ Gerar Relatório"):
-        st.subheader("📃 Resultado Final")
-        comentarios_x = []
-        comentarios_na = []
+   if st.button("✅ Gerar Relatório"):
+    st.subheader("📃 Resultado Final")
+    comentarios = []
 
-        for r in respostas:
-            if r["Marcacao"] in ["X", "N/A"]:
-                base = config[config['Topico'] == r['Topico']]
-                comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
-                prefixo = "🟡 N/A:" if r["Marcacao"] == "N/A" else "❌"
-                comentario_final = f"{prefixo} {comentario_padrao}"
-                if r['ComentarioManual']:
-                    comentario_final += f" ({r['ComentarioManual']})"
+    for r in respostas:
+        if r["Marcacao"] in ["X", "N/A"]:
+            base = config[config['Topico'] == r['Topico']]
+            comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
+            prefixo = "🟡 N/A:" if r["Marcacao"] == "N/A" else "❌"
+            comentario_final = f"{prefixo} {comentario_padrao}"
+            if r['ComentarioManual']:
+                comentario_final += f" ({r['ComentarioManual']})"
+            comentarios.append((r["Indice"], comentario_final, r["Marcacao"]))
 
-                if r["Marcacao"] == "X":
-                    comentarios_x.append((r["Indice"], comentario_final))
-                else:
-                    comentarios_na.append((r["Indice"], comentario_final))
+    # Verifica os X dos últimos 5 tópicos
+    ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
+    prioridade = [c for c in comentarios if c[0] in ultimos_5_idx and c[2] == "X"]
+    restantes = [c for c in comentarios if c not in prioridade]
 
-        # Ordenação: prioriza os últimos 5 tópicos se marcados com X
-        comentarios_x.sort(key=lambda x: (x[0] < len(respostas) - 5, x[0]))
-        comentarios_final = [c[1] for c in comentarios_x + comentarios_na]
+    comentarios_final = prioridade + restantes
+    comentarios_final = [c[1] for c in comentarios_final]
 
-        if comentarios_final:
-            texto_final = "\n\n".join(comentarios_final)  # separação entre cada item
+    if comentarios_final:
+        st.session_state["texto_final"] = "\n\n".join(comentarios_final)
 
-            texto_editado = st.text_area("📝 Edite o texto gerado, se necessário:", value=texto_final, height=400)
+
+        # Mostrar texto final se existir
+    if st.session_state.get("texto_final"):
+        if "texto_editado" not in st.session_state:
+            st.session_state["texto_editado"] = st.session_state["texto_final"]
+
+            st.session_state["texto_editado"] = st.text_area(
+                "📝 Edite o texto gerado, se necessário:",
+                value=st.session_state["texto_editado"],
+                height=400
+            )
 
                       
         else:
