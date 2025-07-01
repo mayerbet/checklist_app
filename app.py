@@ -60,7 +60,12 @@ try:
         with col2:
             comentario_manual = ""
             if resposta != 'OK':
-                comentario_manual = st.text_input(f"Comentário adicional (opcional)", key=f"coment_{i}", value=comentario_default)
+                comentario_manual = st.text_area(
+                    f"Comentário adicional (opcional)",
+                    key=f"coment_{i}",
+                    value=comentario_default,
+                    height=80  # ou ajuste conforme desejar
+                )
 
         respostas.append({
             "Topico": topico,
