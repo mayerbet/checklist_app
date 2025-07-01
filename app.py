@@ -4,14 +4,11 @@ import io
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
-#st.image("bet365-logo-0.png", width=300)
-#st.markdown("---")
+# st.image("bet365-logo-0.png", width=300)
+# st.markdown("---")
 st.title("📋 Análise de QA")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
-
-
-# Carrega a planilha fixa do repositório
 @st.cache_resource
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
@@ -24,21 +21,19 @@ try:
     checklist_df = pd.read_excel(xls, sheet_name="Checklist")
     config_df = pd.read_excel(xls, sheet_name="Config")
 
-    # Limpeza: pulando o cabeçalho extra
     checklist = checklist_df.iloc[1:].reset_index(drop=True)
     checklist.columns = ['Index', 'Topico', 'Marcacao', 'Comentario', 'Observacoes', 'Relatorio']
 
     config = config_df.iloc[1:].reset_index(drop=True)
     config.columns = ['Index', 'Topico', 'ComentarioPadrao']
 
-    # Botão de reset
     if st.button("🧹 Limpar"):
         for i in range(len(checklist)):
             st.session_state[f"resp_{i}"] = "OK"
             st.session_state[f"coment_{i}"] = ""
+        st.session_state["texto_final"] = ""
         st.rerun()
 
-    # Interface do checklist
     respostas = []
     st.subheader("🔢 Checklist")
     for i, row in checklist.iterrows():
@@ -59,68 +54,60 @@ try:
             )
         with col2:
             comentario_manual = ""
-                if resposta != 'OK':
-                    if f"coment_{i}" not in st.session_state:
-                        st.session_state[f"coment_{i}"] = comentario_default
+            if resposta != 'OK':
+                if f"coment_{i}" not in st.session_state:
+                    st.session_state[f"coment_{i}"] = comentario_default
 
-                    comentario_manual = st.text_area(
-                        f"Comentário adicional (opcional)",
-                        value=st.session_state[f"coment_{i}"],
-                        key=f"coment_{i}_text_area",
-                        height=100
-                    )
-
+                comentario_manual = st.text_area(
+                    f"Comentário adicional (opcional)",
+                    value=st.session_state[f"coment_{i}"],
+                    key=f"coment_{i}_text_area",
+                    height=100
+                )
 
         respostas.append({
             "Topico": topico,
             "Marcacao": resposta,
             "ComentarioManual": comentario_manual,
-            "Indice": i  # salvar o índice para controle de prioridade
+            "Indice": i
         })
 
-    # Geração dos comentários finais
-   if st.button("✅ Gerar Relatório"):
-    st.subheader("📃 Resultado Final")
-    comentarios = []
+    if st.button("✅ Gerar Relatório"):
+        st.subheader("📃 Resultado Final")
+        comentarios = []
 
-    for r in respostas:
-        if r["Marcacao"] in ["X", "N/A"]:
-            base = config[config['Topico'] == r['Topico']]
-            comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
-            prefixo = "🟡 N/A:" if r["Marcacao"] == "N/A" else "❌"
-            comentario_final = f"{prefixo} {comentario_padrao}"
-            if r['ComentarioManual']:
-                comentario_final += f" ({r['ComentarioManual']})"
-            comentarios.append((r["Indice"], comentario_final, r["Marcacao"]))
+        for r in respostas:
+            if r["Marcacao"] in ["X", "N/A"]:
+                base = config[config['Topico'] == r['Topico']]
+                comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
+                prefixo = "🟡 N/A:" if r["Marcacao"] == "N/A" else "❌"
+                comentario_final = f"{prefixo} {comentario_padrao}"
+                if r['ComentarioManual']:
+                    comentario_final += f" ({r['ComentarioManual']})"
+                comentarios.append((r["Indice"], comentario_final, r["Marcacao"]))
 
-    # Verifica os X dos últimos 5 tópicos
-    ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
-    prioridade = [c for c in comentarios if c[0] in ultimos_5_idx and c[2] == "X"]
-    restantes = [c for c in comentarios if c not in prioridade]
+        ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
+        prioridade = [c for c in comentarios if c[0] in ultimos_5_idx and c[2] == "X"]
+        restantes = [c for c in comentarios if c not in prioridade]
 
-    comentarios_final = prioridade + restantes
-    comentarios_final = [c[1] for c in comentarios_final]
+        comentarios_final = prioridade + restantes
+        comentarios_final = [c[1] for c in comentarios_final]
 
-    if comentarios_final:
-        st.session_state["texto_final"] = "\n\n".join(comentarios_final)
+        if comentarios_final:
+            st.session_state["texto_final"] = "\n\n".join(comentarios_final)
 
-
-        # Mostrar texto final se existir
     if st.session_state.get("texto_final"):
         if "texto_editado" not in st.session_state:
             st.session_state["texto_editado"] = st.session_state["texto_final"]
 
-            st.session_state["texto_editado"] = st.text_area(
-                "📝 Edite o texto gerado, se necessário:",
-                value=st.session_state["texto_editado"],
-                height=400
-            )
+        st.session_state["texto_editado"] = st.text_area(
+            "📝 Edite o texto gerado, se necessário:",
+            value=st.session_state["texto_editado"],
+            height=400
+        )
+    else:
+        st.info("Nenhuma marcação relevante foi encontrada.")
 
-                      
-        else:
-            st.info("Nenhuma marcação relevante foi encontrada.")
-
-    # Botão fixo para voltar ao topo
     st.markdown("""
         <div style="
         position: fixed;
