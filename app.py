@@ -4,7 +4,7 @@ import io
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
-st.image("bet365-logo-0.png", width=200)
+st.image("bet365-logo-0.png", width=800)
 st.markdown("---")
 st.title("📋 Análise de QA")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
