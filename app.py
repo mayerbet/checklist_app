@@ -87,7 +87,7 @@ try:
             "Indice": i
         })
 
-    if st.button("✅ Gerar Relatório"):
+    if st.button("Gerar Relatório"):
         comentarios = []
         for r in respostas:
             if r["Marcacao"] in ["X", "N/A"]:
@@ -114,13 +114,13 @@ try:
 
     if st.session_state.get("relatorio_gerado", False):
         st.session_state["texto_editado"] = st.text_area(
-            "📝 Edite o texto gerado, se necessário:",
+            "📝 Edite, se necessário:",
             value=st.session_state.get("texto_editado", ""),
             height=400,
             key="texto_editado_area"
         )
 
-        st.markdown("### 💾 Preencha para salvar no histórico")
+        st.markdown("### Dados da análise")
         nome_atendente = st.text_input("Nome do atendente:", key="nome_atendente")
         contato_id = st.text_input("ID do atendimento:", key="contato_id")
         if st.button("📥 Salvar Histórico"):
@@ -136,7 +136,7 @@ try:
             else:
                 st.warning("⚠️ Preencha todos os campos para salvar.")
 
-    if st.checkbox("📂 Ver histórico de análises"):
+    if st.checkbox("📂Histórico"):
         if os.path.exists("historico_analises.csv"):
             historico = pd.read_csv("historico_analises.csv")
             st.dataframe(historico)
