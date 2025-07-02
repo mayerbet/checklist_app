@@ -13,11 +13,10 @@ st.markdown("Preencha o checklist abaixo. Comentários serão gerados automatica
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-def salvar_historico(data_analise, atendente, contato_id, texto_gerado):
+def salvar_historico(data_analise, contato_id, texto_gerado):
     historico_path = "historico_analises.csv"
     nova_linha = pd.DataFrame([{
         "Data": data_analise,
-        "Atendente": atendente,
         "ID do Contato": contato_id,
         "Resultado": texto_gerado
     }])
@@ -111,14 +110,13 @@ try:
 
     if st.session_state.get("relatorio_gerado", False):
         st.markdown("### 💾 Preencha para salvar no histórico")
-        nome = st.text_input("Nome do atendente:", key="atendente")
         contato_id = st.text_input("ID do atendimento:", key="contato_id")
         if st.button("📥 Salvar Histórico"):
-            if nome and contato_id:
-                salvar_historico(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nome, contato_id, st.session_state["texto_final"])
+            if contato_id:
+                salvar_historico(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), contato_id, st.session_state["texto_final"])
                 st.success("✔️ Análise salva com sucesso!")
             else:
-                st.warning("⚠️ Preencha todos os campos para salvar.")
+                st.warning("⚠️ Preencha o campo ID para salvar.")
 
     if st.session_state.get("texto_final"):
         if "texto_editado" not in st.session_state:
@@ -136,6 +134,9 @@ try:
         if os.path.exists("historico_analises.csv"):
             historico = pd.read_csv("historico_analises.csv")
             st.dataframe(historico)
+            if st.button("🗑️ Limpar histórico"):
+                os.remove("historico_analises.csv")
+                st.success("Histórico apagado com sucesso.")
         else:
             st.info("Nenhum histórico encontrado ainda.")
 
