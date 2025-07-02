@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import io
+import os
+from datetime import datetime
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
@@ -9,9 +10,26 @@ st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.title("📋 Análise de QA")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
+# Função para carregar planilha
 @st.cache_resource
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
+
+# Função para salvar histórico em CSV
+def salvar_csv(data, atendente, contato_id, texto):
+    df_novo = pd.DataFrame([{
+        "Data": data,
+        "Atendente": atendente,
+        "ID Contato": contato_id,
+        "Texto Final": texto
+    }])
+    caminho = "historico.csv"
+    if os.path.exists(caminho):
+        df_existente = pd.read_csv(caminho)
+        df_final = pd.concat([df_existente, df_novo], ignore_index=True)
+    else:
+        df_final = df_novo
+    df_final.to_csv(caminho, index=False)
 
 try:
     if "resetar" not in st.session_state:
@@ -72,8 +90,8 @@ try:
             "Indice": i
         })
 
-    if st.button("Concluído"):
-        st.subheader("Relatório")
+    if st.button("✅ Gerar Relatório"):
+        st.subheader("📃 Resultado Final")
         comentarios = []
 
         for r in respostas:
@@ -96,17 +114,35 @@ try:
         if comentarios_final:
             st.session_state["texto_final"] = "\n\n".join(comentarios_final)
 
+            with st.form("salvar_dados"):
+                st.markdown("### 💾 Salvar Análise no Histórico")
+                nome = st.text_input("Nome do atendente:", key="atendente")
+                contato_id = st.text_input("ID do atendimento:", key="contato_id")
+                salvar = st.form_submit_button("📥 Salvar no Histórico")
+
+                if salvar and nome and contato_id:
+                    salvar_csv(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nome, contato_id, st.session_state["texto_final"])
+                    st.success("✔️ Análise salva com sucesso!")
+
     if st.session_state.get("texto_final"):
         if "texto_editado" not in st.session_state:
             st.session_state["texto_editado"] = st.session_state["texto_final"]
 
         st.session_state["texto_editado"] = st.text_area(
-            "📝 Edite, se necessário:",
+            "📝 Edite o texto gerado, se necessário:",
             value=st.session_state["texto_editado"],
             height=400
         )
     else:
         st.info("Nenhuma marcação relevante foi encontrada.")
+
+    # Exibir histórico salvo (CSV)
+    st.markdown("## 📚 Histórico de Análises Salvas")
+    if os.path.exists("historico.csv"):
+        historico_df = pd.read_csv("historico.csv")
+        st.dataframe(historico_df)
+    else:
+        st.info("Nenhuma análise salva ainda.")
 
     st.markdown("""
         <div style="
@@ -126,4 +162,4 @@ try:
     """, unsafe_allow_html=True)
 
 except Exception as e:
-    st.error(f"Erro ao carregar a planilha: {e}")
+    st.error(f"Erro ao carregar a planilha ou salvar dados: {e}")
