@@ -47,6 +47,7 @@ try:
             st.session_state[f"resp_{i}"] = "OK"
             st.session_state[f"coment_{i}"] = ""
         st.session_state["texto_final"] = ""
+        st.session_state["relatorio_gerado"] = False
         st.rerun()
 
     respostas = []
@@ -86,7 +87,6 @@ try:
         })
 
     if st.button("✅ Gerar Relatório"):
-        st.subheader("📃 Resultado Final")
         comentarios = []
         for r in respostas:
             if r["Marcacao"] in ["X", "N/A"]:
@@ -106,18 +106,19 @@ try:
         comentarios_final = [c[1] for c in comentarios_final]
 
         if comentarios_final:
-            texto_gerado = "\n\n".join(comentarios_final)
-            st.session_state["texto_final"] = texto_gerado
+            st.session_state["texto_final"] = "\n\n".join(comentarios_final)
+            st.session_state["relatorio_gerado"] = True
 
-            st.markdown("### 💾 Preencha para salvar no histórico")
-            nome = st.text_input("Nome do atendente:", key="atendente")
-            contato_id = st.text_input("ID do atendimento:", key="contato_id")
-            if st.button("📥 Salvar Histórico"):
-                if nome and contato_id:
-                    salvar_historico(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nome, contato_id, texto_gerado)
-                    st.success("✔️ Análise salva com sucesso!")
-                else:
-                    st.warning("⚠️ Preencha todos os campos para salvar.")
+    if st.session_state.get("relatorio_gerado", False):
+        st.markdown("### 💾 Preencha para salvar no histórico")
+        nome = st.text_input("Nome do atendente:", key="atendente")
+        contato_id = st.text_input("ID do atendimento:", key="contato_id")
+        if st.button("📥 Salvar Histórico"):
+            if nome and contato_id:
+                salvar_historico(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nome, contato_id, st.session_state["texto_final"])
+                st.success("✔️ Análise salva com sucesso!")
+            else:
+                st.warning("⚠️ Preencha todos os campos para salvar.")
 
     if st.session_state.get("texto_final"):
         if "texto_editado" not in st.session_state:
