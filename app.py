@@ -13,13 +13,13 @@ st.markdown("Preencha o checklist abaixo. Comentários serão gerados automatica
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-def salvar_historico(data_analise, nome_atendente, contato_id, texto_gerado):
+def salvar_historico(data_analise, nome_atendente, contato_id, texto_editado):
     historico_path = "historico_analises.csv"
     nova_linha = pd.DataFrame([{
         "Data": data_analise,
         "Atendente": nome_atendente,
         "ID do Contato": contato_id,
-        "Resultado": texto_gerado
+        "Resultado": texto_editado
     }])
     if os.path.exists(historico_path):
         historico_existente = pd.read_csv(historico_path)
@@ -47,6 +47,7 @@ try:
             st.session_state[f"resp_{i}"] = "OK"
             st.session_state[f"coment_{i}"] = ""
         st.session_state["texto_final"] = ""
+        st.session_state["texto_editado"] = ""
         st.session_state["relatorio_gerado"] = False
         st.rerun()
 
@@ -106,31 +107,34 @@ try:
         comentarios_final = [c[1] for c in comentarios_final]
 
         if comentarios_final:
-            st.session_state["texto_final"] = "\n\n".join(comentarios_final)
+            texto_gerado = "\n\n".join(comentarios_final)
+            st.session_state["texto_final"] = texto_gerado
+            st.session_state["texto_editado"] = texto_gerado
             st.session_state["relatorio_gerado"] = True
 
     if st.session_state.get("relatorio_gerado", False):
+        st.session_state["texto_editado"] = st.text_area(
+            "📝 Edite o texto gerado, se necessário:",
+            value=st.session_state.get("texto_editado", ""),
+            height=400,
+            key="texto_editado_area"
+        )
+
         st.markdown("### 💾 Preencha para salvar no histórico")
         nome_atendente = st.text_input("Nome do atendente:", key="nome_atendente")
         contato_id = st.text_input("ID do atendimento:", key="contato_id")
         if st.button("📥 Salvar Histórico"):
             if nome_atendente and contato_id:
-                salvar_historico(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nome_atendente, contato_id, st.session_state["texto_final"])
+                salvar_historico(
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    nome_atendente,
+                    contato_id,
+                    st.session_state["texto_editado"]
+                )
                 st.success("✔️ Análise salva com sucesso!")
+                st.session_state["relatorio_gerado"] = False
             else:
                 st.warning("⚠️ Preencha todos os campos para salvar.")
-
-    if st.session_state.get("texto_final"):
-        if "texto_editado" not in st.session_state:
-            st.session_state["texto_editado"] = st.session_state["texto_final"]
-
-        st.session_state["texto_editado"] = st.text_area(
-            "📝 Edite o texto gerado, se necessário:",
-            value=st.session_state["texto_editado"],
-            height=400
-        )
-    else:
-        st.info("Nenhuma marcação relevante foi encontrada.")
 
     if st.checkbox("📂 Ver histórico de análises"):
         if os.path.exists("historico_analises.csv"):
