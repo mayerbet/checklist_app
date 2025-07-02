@@ -1,35 +1,31 @@
 import streamlit as st
 import pandas as pd
+import io
 import os
 from datetime import datetime
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
-# st.image("bet365-logo-0.png", width=300)
-# st.markdown("---")
 st.title("📋 Análise de QA")
 st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
 
-# Função para carregar planilha
 @st.cache_resource
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-# Função para salvar histórico em CSV
-def salvar_csv(data, atendente, contato_id, texto):
-    df_novo = pd.DataFrame([{
-        "Data": data,
-        "Atendente": atendente,
-        "ID Contato": contato_id,
-        "Texto Final": texto
+def salvar_historico(data_analise, usuario, texto_gerado):
+    historico_path = "historico_analises.csv"
+    nova_linha = pd.DataFrame([{
+        "Data": data_analise,
+        "Usuário": usuario,
+        "Resultado": texto_gerado
     }])
-    caminho = "historico.csv"
-    if os.path.exists(caminho):
-        df_existente = pd.read_csv(caminho)
-        df_final = pd.concat([df_existente, df_novo], ignore_index=True)
+    if os.path.exists(historico_path):
+        historico_existente = pd.read_csv(historico_path)
+        historico_atualizado = pd.concat([historico_existente, nova_linha], ignore_index=True)
     else:
-        df_final = df_novo
-    df_final.to_csv(caminho, index=False)
+        historico_atualizado = nova_linha
+    historico_atualizado.to_csv(historico_path, index=False)
 
 try:
     if "resetar" not in st.session_state:
@@ -57,9 +53,7 @@ try:
     for i, row in checklist.iterrows():
         topico = row['Topico']
         st.markdown(f"### {topico}")
-
         col1, col2 = st.columns([1, 3])
-
         resposta_default = st.session_state.get(f"resp_{i}", "OK")
         comentario_default = st.session_state.get(f"coment_{i}", "")
 
@@ -93,7 +87,6 @@ try:
     if st.button("✅ Gerar Relatório"):
         st.subheader("📃 Resultado Final")
         comentarios = []
-
         for r in respostas:
             if r["Marcacao"] in ["X", "N/A"]:
                 base = config[config['Topico'] == r['Topico']]
@@ -112,17 +105,9 @@ try:
         comentarios_final = [c[1] for c in comentarios_final]
 
         if comentarios_final:
-            st.session_state["texto_final"] = "\n\n".join(comentarios_final)
-
-            with st.form("salvar_dados"):
-                st.markdown("### 💾 Salvar Análise no Histórico")
-                nome = st.text_input("Nome do atendente:", key="atendente")
-                contato_id = st.text_input("ID do atendimento:", key="contato_id")
-                salvar = st.form_submit_button("📥 Salvar no Histórico")
-
-                if salvar and nome and contato_id:
-                    salvar_csv(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nome, contato_id, st.session_state["texto_final"])
-                    st.success("✔️ Análise salva com sucesso!")
+            texto_gerado = "\n\n".join(comentarios_final)
+            st.session_state["texto_final"] = texto_gerado
+            salvar_historico(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "usuario_local", texto_gerado)
 
     if st.session_state.get("texto_final"):
         if "texto_editado" not in st.session_state:
@@ -136,13 +121,12 @@ try:
     else:
         st.info("Nenhuma marcação relevante foi encontrada.")
 
-    # Exibir histórico salvo (CSV)
-    st.markdown("## 📚 Histórico de Análises Salvas")
-    if os.path.exists("historico.csv"):
-        historico_df = pd.read_csv("historico.csv")
-        st.dataframe(historico_df)
-    else:
-        st.info("Nenhuma análise salva ainda.")
+    if st.checkbox("📂 Ver histórico de análises"):
+        if os.path.exists("historico_analises.csv"):
+            historico = pd.read_csv("historico_analises.csv")
+            st.dataframe(historico)
+        else:
+            st.info("Nenhum histórico encontrado ainda.")
 
     st.markdown("""
         <div style="
@@ -162,4 +146,4 @@ try:
     """, unsafe_allow_html=True)
 
 except Exception as e:
-    st.error(f"Erro ao carregar a planilha ou salvar dados: {e}")
+    st.error(f"Erro ao carregar a planilha: {e}")
