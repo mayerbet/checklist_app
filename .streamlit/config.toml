@@ -3,3 +3,5 @@ primaryColor = "#00ffb6"
 backgroundColor = "#282828"
 secondaryBackgroundColor = "#005440"
 textColor = "#ffffff"
+[global]
+pythonVersion = "3.10"
