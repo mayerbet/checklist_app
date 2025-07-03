@@ -3,6 +3,14 @@ import pandas as pd
 import io
 import os
 from datetime import datetime
+from supabase import create_client
+import os
+
+# Lê as credenciais do secrets.toml
+SUPABASE_URL = st.secrets["supabase"]["url"]
+SUPABASE_KEY = st.secrets["supabase"]["key"]
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
@@ -176,6 +184,21 @@ if aba == "Checklist":
     exibir_checklist()
 elif aba == "Comentários Padrão":
     exibir_configuracoes()
+
+data = {
+    "data": datetime.now().isoformat(),
+    "atendente": nome_atendente,
+    "contato_id": contato_id,
+    "resultado": st.session_state["texto_editado"]
+}
+
+res = supabase.table("historico").insert(data).execute()
+
+if res.status_code == 201:
+    st.success("✔️ Registro salvo no Supabase com sucesso!")
+else:
+    st.error("❌ Erro ao salvar no Supabase")
+
 
 st.markdown("""
     <div style="
