@@ -183,12 +183,13 @@ def exibir_checklist():
                     st.warning("⚠️ Preencha todos os campos para salvar.")
 
         if st.button("🧹 Limpar"):
-            for i in range(len(checklist)):
-                st.session_state[f"resp_{i}"] = "OK"
-                st.session_state[f"coment_{i}_text_area"] = ""
+            for i in range(len(respostas)):
+                st.session_state.pop(f"resp_{i}", None)
+                st.session_state.pop(f"coment_{i}_text_area", None)
             st.session_state["texto_editado"] = ""
             st.session_state["relatorio_gerado"] = False
             st.rerun()
+
 
     except Exception as e:
         st.error(f"Erro ao carregar checklist: {e}")
