@@ -1,7 +1,3 @@
-As melhores e mais belas coisas do mundo não podem ser vistas nem tocadas, mas o coração as sente
-
-
-
 import streamlit as st
 import pandas as pd
 import io
