@@ -29,93 +29,111 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
             "resultado": texto_editado
         }
         res = supabase.table("history").insert(data).execute()
-
-        # ✅ A forma correta de validar o sucesso é verificar se 'res.data' contém algo
         if res and res.data:
             return True
         else:
             st.error("Erro desconhecido ao salvar no Supabase.")
             return False
-
     except Exception as e:
         st.error(f"Exceção ao salvar no Supabase: {e}")
         return False
 
-
+def salvar_comentarios_padrao(usuario, comentarios):
+    try:
+        registros = [
+            {
+                "topico": topico,
+                "comentario": comentario,
+                "usuario": usuario,
+                "atualizado_em": datetime.now().isoformat()
+            }
+            for topico, comentario in comentarios.items()
+        ]
+        supabase.table("comentarios_padrao").upsert(registros, on_conflict=["topico", "usuario"]).execute()
+        return True
     except Exception as e:
-        st.error(f"Exceção ao salvar no Supabase: {e}")
+        st.error(f"Erro ao salvar comentários no Supabase: {e}")
         return False
+
+def carregar_comentarios_padrao(usuario):
+    try:
+        res = supabase.table("comentarios_padrao").select("topico, comentario").eq("usuario", usuario).execute()
+        if res.data:
+            return {item["topico"]: item["comentario"] for item in res.data}
+        else:
+            return {}
+    except Exception as e:
+        st.error(f"Erro ao carregar comentários do Supabase: {e}")
+        return {}
 
 def exibir_configuracoes():
     st.subheader("🛠️ Configurar Comentários Padrão")
+    usuario = st.text_input("👤 Nome do usuário:", key="usuario_config")
+
+    if not usuario:
+        st.info("Insira seu nome para editar seus comentários padrão.")
+        return
+
     xls = carregar_planilha()
     try:
         df_config = pd.read_excel(xls, sheet_name="Config", skiprows=1)
         df_config.columns = ["Index", "Topico", "ComentarioPadrao"]
+
+        comentarios_existentes = carregar_comentarios_padrao(usuario)
+        comentarios_atualizados = {}
+
         for i, row in df_config.iterrows():
+            topico = row['Topico']
+            comentario_padrao = comentarios_existentes.get(topico, row['ComentarioPadrao'])
             novo_comentario = st.text_area(
-                f"✏️ {row['Topico']}",
-                value=row['ComentarioPadrao'],
+                f"✏️ {topico}",
+                value=comentario_padrao,
                 key=f"coment_config_{i}",
                 height=100
             )
-            df_config.at[i, 'ComentarioPadrao'] = novo_comentario
+            comentarios_atualizados[topico] = novo_comentario
 
-        if st.button("📏 Salvar Comentários Padrão"):
-            df_config.to_excel("checklist_modelo.xlsx", sheet_name="Config", index=False)
-            st.success("Comentários padrão atualizados com sucesso!")
+        if st.button("💾 Salvar Comentários Padrão no Supabase"):
+            sucesso = salvar_comentarios_padrao(usuario, comentarios_atualizados)
+            if sucesso:
+                st.success("Comentários padrão salvos no Supabase com sucesso!")
     except Exception as e:
         st.error(f"Erro ao carregar a aba 'Config': {e}")
 
 def exibir_checklist():
-    try:
-        if "resetar" not in st.session_state:
-            st.session_state["resetar"] = False
+    st.subheader("🔢 Checklist")
+    usuario = st.text_input("👤 Nome do usuário:", key="usuario_check")
 
+    if not usuario:
+        st.info("Informe o nome de usuário para carregar seus comentários personalizados.")
+        return
+
+    try:
         xls = carregar_planilha()
         checklist_df = pd.read_excel(xls, sheet_name="Checklist")
-        config_df = pd.read_excel(xls, sheet_name="Config")
-
         checklist = checklist_df.iloc[1:].reset_index(drop=True)
         checklist.columns = ['Index', 'Topico', 'Marcacao', 'Comentario', 'Observacoes', 'Relatorio']
 
-        config = config_df.iloc[1:].reset_index(drop=True)
-        config.columns = ['Index', 'Topico', 'ComentarioPadrao']
-
-        if st.button("🩹 Limpar"):
-            for i in range(len(checklist)):
-                st.session_state[f"resp_{i}"] = "OK"
-                st.session_state[f"coment_{i}"] = ""
-            st.session_state["texto_final"] = ""
-            st.session_state["texto_editado"] = ""
-            st.session_state["relatorio_gerado"] = False
-            st.rerun()
+        comentarios_usuario = carregar_comentarios_padrao(usuario)
 
         respostas = []
-        st.subheader("🔢 Checklist")
         for i, row in checklist.iterrows():
             topico = row['Topico']
             st.markdown(f"### {topico}")
             col1, col2 = st.columns([1, 3])
-            resposta_default = st.session_state.get(f"resp_{i}", "OK")
-            comentario_default = st.session_state.get(f"coment_{i}", "")
 
             with col1:
                 resposta = st.radio(
-                    label=f"Selecione para o tópico {i+1}",
+                    f"Selecione para o tópico {i+1}",
                     options=['OK', 'X', 'N/A'],
-                    index=['OK', 'X', 'N/A'].index(resposta_default),
                     key=f"resp_{i}"
                 )
+
             with col2:
                 comentario_manual = ""
                 if resposta != 'OK':
-                    if f"coment_{i}" not in st.session_state:
-                        st.session_state[f"coment_{i}"] = comentario_default
-
                     comentario_manual = st.text_area(
                         f"Comentário adicional (opcional)",
-                        value=st.session_state[f"coment_{i}"],
                         key=f"coment_{i}_text_area",
                         height=100
                     )
@@ -131,36 +149,26 @@ def exibir_checklist():
             comentarios = []
             for r in respostas:
                 if r["Marcacao"] in ["X", "N/A"]:
-                    base = config[config['Topico'] == r['Topico']]
-                    comentario_padrao = base['ComentarioPadrao'].values[0] if not base.empty else "Comentário não encontrado."
+                    comentario_padrao = comentarios_usuario.get(r["Topico"], "Comentário não encontrado.")
                     prefixo = "🟡 N/A:" if r["Marcacao"] == "N/A" else "❌"
                     comentario_final = f"{prefixo} {comentario_padrao}"
-                    if r['ComentarioManual']:
+                    if r["ComentarioManual"]:
                         comentario_final += f" ({r['ComentarioManual']})"
                     comentarios.append((r["Indice"], comentario_final, r["Marcacao"]))
 
             ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
             prioridade = [c for c in comentarios if c[0] in ultimos_5_idx and c[2] == "X"]
             restantes = [c for c in comentarios if c not in prioridade]
-
             comentarios_final = prioridade + restantes
-            comentarios_final = [c[1] for c in comentarios_final]
+            texto_gerado = "\n\n".join([c[1] for c in comentarios_final])
 
-            if comentarios_final:
-                texto_gerado = "\n\n".join(comentarios_final)
-                st.session_state["texto_final"] = texto_gerado
-                st.session_state["texto_editado"] = texto_gerado
-                st.session_state["relatorio_gerado"] = True
-
-        if st.session_state.get("relatorio_gerado", False):
             st.session_state["texto_editado"] = st.text_area(
                 "📝 Edite o texto gerado, se necessário:",
-                value=st.session_state.get("texto_editado", ""),
+                value=texto_gerado,
                 height=400,
                 key="texto_editado_area"
             )
 
-            st.markdown("### 📏 Preencha para salvar no histórico")
             nome_atendente = st.text_input("Nome do atendente:", key="nome_atendente")
             contato_id = st.text_input("ID do atendimento:", key="contato_id")
             if st.button("📅 Salvar Histórico"):
@@ -173,14 +181,11 @@ def exibir_checklist():
                     )
                     if sucesso:
                         st.success("✔️ Análise salva com sucesso no Supabase!")
-                        st.session_state["relatorio_gerado"] = False
-                    else:
-                        st.error("❌ Erro ao salvar no Supabase.")
                 else:
                     st.warning("⚠️ Preencha todos os campos para salvar.")
 
     except Exception as e:
-        st.error(f"Erro ao carregar a planilha: {e}")
+        st.error(f"Erro ao carregar checklist: {e}")
 
 def exibir_historico():
     st.subheader("📚 Histórico de Análises")
@@ -190,6 +195,9 @@ def exibir_historico():
         if registros:
             df = pd.DataFrame(registros)
             st.dataframe(df)
+            if st.button("🗑️ Limpar Histórico"):
+                supabase.table("history").delete().neq("id", "").execute()
+                st.success("Histórico limpo com sucesso.")
         else:
             st.info("Nenhum histórico encontrado.")
     except Exception as e:
