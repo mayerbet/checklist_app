@@ -29,14 +29,19 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
             "resultado": texto_editado
         }
         res = supabase.table("historico").insert(data).execute()
+        
+        # DEBUG: Mostra o objeto de resposta completo
+        st.write("Resposta do Supabase:", res)
+        
         if hasattr(res, "data") and res.data:
             return True
         else:
-            st.error(f"Erro ao salvar no Supabase: {res}")
+            st.error("⚠️ O Supabase não retornou dados.")
             return False
     except Exception as e:
-        st.error(f"Exceção ao salvar no Supabase: {e}")
+        st.error(f"❌ Exceção ao salvar no Supabase: {e}")
         return False
+
 
 
 def exibir_configuracoes():
