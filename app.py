@@ -169,7 +169,7 @@ def exibir_checklist():
 def exibir_historico():
     st.subheader("📚 Histórico de Análises")
     try:
-        data = supabase.table(TABELA_HISTORICO).select("*").order("data", desc=True).limit(50).execute()
+        data = supabase.table("history").select("*").order("data", desc=True).limit(50).execute()
         registros = data.data
         if registros:
             df = pd.DataFrame(registros)
