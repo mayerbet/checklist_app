@@ -59,10 +59,16 @@ def carregar_comentarios_padrao(usuario):
         st.error(f"Erro ao carregar comentários do Supabase: {e}")
         return {}
 
-# Entrada de usuário compartilhada entre abas
+# Navegação e persistência do usuário
 st.sidebar.subheader("👤 Usuário")
-usuario = st.sidebar.text_input("Digite seu nome", key="usuario", value=st.session_state.get("usuario", ""))
-st.session_state["usuario"] = usuario.strip()
+
+# Define valor inicial (apenas uma vez)
+if "usuario" not in st.session_state:
+    st.session_state["usuario"] = ""
+
+# Campo de entrada (apenas leitura da session_state)
+usuario = st.sidebar.text_input("Digite seu nome", value=st.session_state["usuario"], key="usuario_input")
+st.session_state["usuario"] = usuario.strip()  # Seguro aqui porque é dentro do ciclo
 
 def exibir_configuracoes():
     st.subheader("🛠️ Configurar Comentários Padrão")
