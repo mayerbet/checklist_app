@@ -127,7 +127,6 @@ def exibir_checklist():
                     key=f"resp_{i}"
                 )
 
-                )
             with col2:
                 comentario_manual = ""
                 if resposta != 'OK':
