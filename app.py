@@ -31,14 +31,6 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
         st.error(f"Exceção ao salvar no Supabase: {e}")
         return False
 
-if st.button("🧹 Limpar"):
-            for i in range(len(checklist)):
-                st.session_state[f"resp_{i}"] = "OK"
-                st.session_state[f"coment_{i}"] = ""
-            st.session_state["texto_editado"] = ""
-            st.session_state["relatorio_gerado"] = False
-            st.rerun()
-
 def salvar_comentarios_padrao(usuario, comentarios):
     try:
         registros = [
@@ -195,6 +187,14 @@ def exibir_checklist():
 
     except Exception as e:
         st.error(f"Erro ao carregar checklist: {e}")
+        
+if st.button("🧹 Limpar"):
+            for i in range(len(checklist)):
+                st.session_state[f"resp_{i}"] = "OK"
+                st.session_state[f"coment_{i}"] = ""
+            st.session_state["texto_editado"] = ""
+            st.session_state["relatorio_gerado"] = False
+            st.rerun()
 
 def exibir_historico():
     st.subheader("📚 Histórico de Análises")
