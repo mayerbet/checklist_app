@@ -21,14 +21,25 @@ def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
 def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado):
-    data = {
-        "data": data_analise,
-        "atendente": nome_atendente,
-        "contato_id": contato_id,
-        "resultado": texto_editado
-    }
-    res = supabase.table("history").insert(data).execute()
-    return res.status_code == 201
+    try:
+        data = {
+            "data": data_analise,
+            "atendente": nome_atendente,
+            "contato_id": contato_id,
+            "resultado": texto_editado
+        }
+        res = supabase.table("history").insert(data).execute()
+        
+        # ✅ Verifica se há erros no resultado
+        if res.data and not res.error:
+            return True
+        else:
+            st.error(f"Erro ao salvar no Supabase: {res.error}")
+            return False
+
+    except Exception as e:
+        st.error(f"Exceção ao salvar no Supabase: {e}")
+        return False
 
 def exibir_configuracoes():
     st.subheader("🛠️ Configurar Comentários Padrão")
