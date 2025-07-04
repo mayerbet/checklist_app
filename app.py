@@ -21,14 +21,23 @@ def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
 def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado):
-    data = {
-        "data": data_analise,
-        "atendente": nome_atendente,
-        "contato_id": contato_id,
-        "resultado": texto_editado
-    }
-    res = supabase.table("historico").insert(data).execute()
-    return res.status_code == 201
+    try:
+        data = {
+            "data": data_analise,
+            "atendente": nome_atendente,
+            "contato_id": contato_id,
+            "resultado": texto_editado
+        }
+        res = supabase.table("historico").insert(data).execute()
+        if hasattr(res, "data") and res.data:
+            return True
+        else:
+            st.error(f"Erro ao salvar no Supabase: {res}")
+            return False
+    except Exception as e:
+        st.error(f"Exceção ao salvar no Supabase: {e}")
+        return False
+
 
 def exibir_configuracoes():
     st.subheader("🛠️ Configurar Comentários Padrão")
@@ -150,7 +159,8 @@ def exibir_checklist():
             if st.button("📅 Salvar Histórico"):
                 if nome_atendente and contato_id:
                     sucesso = salvar_historico_supabase(
-                        datetime.now().isoformat(),
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+
                         nome_atendente,
                         contato_id,
                         st.session_state["texto_editado"]
