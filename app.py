@@ -1,3 +1,7 @@
+As melhores e mais belas coisas do mundo não podem ser vistas nem tocadas, mas o coração as sente
+
+
+
 import streamlit as st
 import pandas as pd
 import io
@@ -8,7 +12,6 @@ from supabase import create_client
 # Lê as credenciais do secrets.toml
 SUPABASE_URL = st.secrets["supabase"]["url"]
 SUPABASE_KEY = st.secrets["supabase"]["key"]
-TABELA_HISTORICO = "history"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -22,21 +25,14 @@ def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
 def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado):
-    try:
-        data = {
-            "data": data_analise,
-            "atendente": nome_atendente,
-            "contato_id": contato_id,
-            "resultado": texto_editado
-        }
-        res = supabase.table(TABELA_HISTORICO).insert(data).execute()
-        if res.status_code == 201:
-            return True
-        else:
-            return False
-    except Exception as e:
-        st.error(f"Exceção ao salvar no Supabase: {e}")
-        return False
+    data = {
+        "data": data_analise,
+        "atendente": nome_atendente,
+        "contato_id": contato_id,
+        "resultado": texto_editado
+    }
+    res = supabase.table("history").insert(data).execute()
+    return res.status_code == 201
 
 def exibir_configuracoes():
     st.subheader("🛠️ Configurar Comentários Padrão")
