@@ -205,9 +205,14 @@ def exibir_historico():
         if registros:
             df = pd.DataFrame(registros)
             st.dataframe(df)
-            if st.button("🗑️ Limpar Histórico"):
-                supabase.table("history").delete().neq("id", "").execute()
-                st.success("Histórico limpo com sucesso.")
+           if st.button("🗑️ Limpar Histórico"):
+                try:
+                    supabase.table("history").delete().execute()
+                    st.success("Histórico limpo com sucesso.")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Erro ao apagar histórico: {e}")
+
         else:
             st.info("Nenhum histórico encontrado.")
     except Exception as e:
