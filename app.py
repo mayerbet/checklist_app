@@ -44,7 +44,7 @@ def salvar_comentarios_padrao(usuario, comentarios):
         ]
         supabase.table("comentarios_padrao").upsert(
             registros,
-            on_conflict="topico,usuario"  # <- Corrigido aqui
+            on_conflict="topico,usuario"
         ).execute()
         return True
     except Exception as e:
@@ -59,20 +59,15 @@ def carregar_comentarios_padrao(usuario):
         st.error(f"Erro ao carregar comentários do Supabase: {e}")
         return {}
 
-# Navegação e persistência do usuário
+# Persistência do usuário via menu lateral
 st.sidebar.subheader("👤 Usuário")
-
-# Define valor inicial (apenas uma vez)
 if "usuario" not in st.session_state:
     st.session_state["usuario"] = ""
-
-# Campo de entrada (apenas leitura da session_state)
 usuario = st.sidebar.text_input("Digite seu nome", value=st.session_state["usuario"], key="usuario_input")
-st.session_state["usuario"] = usuario.strip()  # Seguro aqui porque é dentro do ciclo
+st.session_state["usuario"] = usuario.strip()
 
 def exibir_configuracoes():
     st.subheader("🛠️ Configurar Comentários Padrão")
-
     if not usuario:
         st.info("Insira seu nome no menu lateral para editar seus comentários padrão.")
         return
@@ -81,7 +76,6 @@ def exibir_configuracoes():
     try:
         df_config = pd.read_excel(xls, sheet_name="Config", skiprows=1)
         df_config.columns = ["Index", "Topico", "ComentarioPadrao"]
-
         comentarios_existentes = carregar_comentarios_padrao(usuario)
         comentarios_atualizados = {}
 
@@ -106,7 +100,6 @@ def exibir_configuracoes():
 
 def exibir_checklist():
     st.subheader("🔢 Checklist")
-
     if not usuario:
         st.info("Informe o nome de usuário no menu lateral para continuar.")
         return
@@ -163,13 +156,16 @@ def exibir_checklist():
             comentarios_final = prioridade + restantes
             texto_gerado = "\n\n".join([c[1] for c in comentarios_final])
 
-            st.session_state["texto_editado"] = st.text_area(
+            st.session_state["texto_editado"] = texto_gerado
+            st.session_state["relatorio_gerado"] = True
+
+        if st.session_state.get("relatorio_gerado"):
+            st.text_area(
                 "📝 Edite o texto gerado, se necessário:",
-                value=texto_gerado,
+                value=st.session_state.get("texto_editado", ""),
                 height=400,
                 key="texto_editado_area"
             )
-
             nome_atendente = st.text_input("Nome do atendente:", key="nome_atendente")
             contato_id = st.text_input("ID do atendimento:", key="contato_id")
             if st.button("📅 Salvar Histórico"):
@@ -182,19 +178,20 @@ def exibir_checklist():
                     )
                     if sucesso:
                         st.success("✔️ Análise salva com sucesso no Supabase!")
+                        st.session_state["relatorio_gerado"] = False
                 else:
                     st.warning("⚠️ Preencha todos os campos para salvar.")
 
-    except Exception as e:
-        st.error(f"Erro ao carregar checklist: {e}")
-        
-if st.button("🧹 Limpar"):
+        if st.button("🧹 Limpar"):
             for i in range(len(checklist)):
                 st.session_state[f"resp_{i}"] = "OK"
-                st.session_state[f"coment_{i}"] = ""
+                st.session_state[f"coment_{i}_text_area"] = ""
             st.session_state["texto_editado"] = ""
             st.session_state["relatorio_gerado"] = False
             st.rerun()
+
+    except Exception as e:
+        st.error(f"Erro ao carregar checklist: {e}")
 
 def exibir_historico():
     st.subheader("📚 Histórico de Análises")
