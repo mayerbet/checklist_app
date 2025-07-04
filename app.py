@@ -29,13 +29,18 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
             "resultado": texto_editado
         }
         res = supabase.table("history").insert(data).execute()
-        
-        # ✅ Verifica se há erros no resultado
-        if res.data and not res.error:
+
+        # ✅ A forma correta de validar o sucesso é verificar se 'res.data' contém algo
+        if res and res.data:
             return True
         else:
-            st.error(f"Erro ao salvar no Supabase: {res.error}")
+            st.error("Erro desconhecido ao salvar no Supabase.")
             return False
+
+    except Exception as e:
+        st.error(f"Exceção ao salvar no Supabase: {e}")
+        return False
+
 
     except Exception as e:
         st.error(f"Exceção ao salvar no Supabase: {e}")
