@@ -20,7 +20,7 @@ st.markdown("Preencha o checklist abaixo. Comentários serão gerados automatica
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado):
+def salvar_history_supabase(data_analise, nome_atendente, contato_id, texto_editado):
     try:
         data = {
             "data": data_analise,
@@ -28,7 +28,7 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
             "contato_id": contato_id,
             "resultado": texto_editado
         }
-        res = supabase.table("historico").insert(data).execute()
+        res = supabase.table("history").insert(data).execute()
         
         # DEBUG: Mostra o objeto de resposta completo
         st.write("Resposta do Supabase:", res)
@@ -163,7 +163,7 @@ def exibir_checklist():
             contato_id = st.text_input("ID do atendimento:", key="contato_id")
             if st.button("📅 Salvar Histórico"):
                 if nome_atendente and contato_id:
-                    sucesso = salvar_historico_supabase(
+                    sucesso = salvar_history_supabase(
                         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 
                         nome_atendente,
