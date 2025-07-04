@@ -1,14 +1,11 @@
 import streamlit as st
 import pandas as pd
-import io
-import os
 from datetime import datetime
 from supabase import create_client
 
 # Lê as credenciais do secrets.toml
 SUPABASE_URL = st.secrets["supabase"]["url"]
 SUPABASE_KEY = st.secrets["supabase"]["key"]
-
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
@@ -29,11 +26,7 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
             "resultado": texto_editado
         }
         res = supabase.table("history").insert(data).execute()
-        if res and res.data:
-            return True
-        else:
-            st.error("Erro desconhecido ao salvar no Supabase.")
-            return False
+        return bool(res and res.data)
     except Exception as e:
         st.error(f"Exceção ao salvar no Supabase: {e}")
         return False
@@ -49,7 +42,10 @@ def salvar_comentarios_padrao(usuario, comentarios):
             }
             for topico, comentario in comentarios.items()
         ]
-        supabase.table("comentarios_padrao").upsert(registros, on_conflict=["topico", "usuario"]).execute()
+        supabase.table("comentarios_padrao").upsert(
+            registros,
+            on_conflict="topico,usuario"  # <- Corrigido aqui
+        ).execute()
         return True
     except Exception as e:
         st.error(f"Erro ao salvar comentários no Supabase: {e}")
@@ -58,20 +54,21 @@ def salvar_comentarios_padrao(usuario, comentarios):
 def carregar_comentarios_padrao(usuario):
     try:
         res = supabase.table("comentarios_padrao").select("topico, comentario").eq("usuario", usuario).execute()
-        if res.data:
-            return {item["topico"]: item["comentario"] for item in res.data}
-        else:
-            return {}
+        return {item["topico"]: item["comentario"] for item in res.data} if res.data else {}
     except Exception as e:
         st.error(f"Erro ao carregar comentários do Supabase: {e}")
         return {}
 
+# Entrada de usuário compartilhada entre abas
+st.sidebar.subheader("👤 Usuário")
+usuario = st.sidebar.text_input("Digite seu nome", key="usuario", value=st.session_state.get("usuario", ""))
+st.session_state["usuario"] = usuario.strip()
+
 def exibir_configuracoes():
     st.subheader("🛠️ Configurar Comentários Padrão")
-    usuario = st.text_input("👤 Nome do usuário:", key="usuario_config")
 
     if not usuario:
-        st.info("Insira seu nome para editar seus comentários padrão.")
+        st.info("Insira seu nome no menu lateral para editar seus comentários padrão.")
         return
 
     xls = carregar_planilha()
@@ -96,16 +93,16 @@ def exibir_configuracoes():
         if st.button("💾 Salvar Comentários Padrão no Supabase"):
             sucesso = salvar_comentarios_padrao(usuario, comentarios_atualizados)
             if sucesso:
-                st.success("Comentários padrão salvos no Supabase com sucesso!")
+                st.success("Comentários padrão salvos com sucesso no Supabase!")
+
     except Exception as e:
         st.error(f"Erro ao carregar a aba 'Config': {e}")
 
 def exibir_checklist():
     st.subheader("🔢 Checklist")
-    usuario = st.text_input("👤 Nome do usuário:", key="usuario_check")
 
     if not usuario:
-        st.info("Informe o nome de usuário para carregar seus comentários personalizados.")
+        st.info("Informe o nome de usuário no menu lateral para continuar.")
         return
 
     try:
@@ -115,8 +112,8 @@ def exibir_checklist():
         checklist.columns = ['Index', 'Topico', 'Marcacao', 'Comentario', 'Observacoes', 'Relatorio']
 
         comentarios_usuario = carregar_comentarios_padrao(usuario)
-
         respostas = []
+
         for i, row in checklist.iterrows():
             topico = row['Topico']
             st.markdown(f"### {topico}")
@@ -128,7 +125,6 @@ def exibir_checklist():
                     options=['OK', 'X', 'N/A'],
                     key=f"resp_{i}"
                 )
-
             with col2:
                 comentario_manual = ""
                 if resposta != 'OK':
@@ -137,7 +133,6 @@ def exibir_checklist():
                         key=f"coment_{i}_text_area",
                         height=100
                     )
-
             respostas.append({
                 "Topico": topico,
                 "Marcacao": resposta,
@@ -203,6 +198,7 @@ def exibir_historico():
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
 
+# Navegação
 aba = st.sidebar.radio("Navegação", ["Checklist", "Comentários Padrão", "Histórico"])
 if aba == "Checklist":
     exibir_checklist()
