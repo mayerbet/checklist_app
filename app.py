@@ -119,10 +119,14 @@ def exibir_checklist():
             col1, col2 = st.columns([1, 3])
 
             with col1:
+                resposta_default = st.session_state.get(f"resp_{i}", "OK")
                 resposta = st.radio(
                     f"Selecione para o tópico {i+1}",
                     options=['OK', 'X', 'N/A'],
+                    index=['OK', 'X', 'N/A'].index(resposta_default),
                     key=f"resp_{i}"
+                )
+
                 )
             with col2:
                 comentario_manual = ""
@@ -183,7 +187,7 @@ def exibir_checklist():
                     st.warning("⚠️ Preencha todos os campos para salvar.")
 
         if st.button("🧹 Limpar"):
-            for i in range(len(respostas)):
+            for i in range(len(checklist)):
                 st.session_state.pop(f"resp_{i}", None)
                 st.session_state.pop(f"coment_{i}_text_area", None)
             st.session_state["texto_editado"] = ""
