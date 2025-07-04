@@ -8,6 +8,7 @@ from supabase import create_client
 # Lê as credenciais do secrets.toml
 SUPABASE_URL = st.secrets["supabase"]["url"]
 SUPABASE_KEY = st.secrets["supabase"]["key"]
+TABELA_HISTORICO = "history"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -20,7 +21,7 @@ st.markdown("Preencha o checklist abaixo. Comentários serão gerados automatica
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-def salvar_history_supabase(data_analise, nome_atendente, contato_id, texto_editado):
+def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado):
     try:
         data = {
             "data": data_analise,
@@ -28,21 +29,14 @@ def salvar_history_supabase(data_analise, nome_atendente, contato_id, texto_edit
             "contato_id": contato_id,
             "resultado": texto_editado
         }
-        res = supabase.table("history").insert(data).execute()
-        
-        # DEBUG: Mostra o objeto de resposta completo
-        st.write("Resposta do Supabase:", res)
-        
-        if hasattr(res, "data") and res.data:
+        res = supabase.table(TABELA_HISTORICO).insert(data).execute()
+        if res.status_code == 201:
             return True
         else:
-            st.error("⚠️ O Supabase não retornou dados.")
             return False
     except Exception as e:
-        st.error(f"❌ Exceção ao salvar no Supabase: {e}")
+        st.error(f"Exceção ao salvar no Supabase: {e}")
         return False
-
-
 
 def exibir_configuracoes():
     st.subheader("🛠️ Configurar Comentários Padrão")
@@ -163,9 +157,8 @@ def exibir_checklist():
             contato_id = st.text_input("ID do atendimento:", key="contato_id")
             if st.button("📅 Salvar Histórico"):
                 if nome_atendente and contato_id:
-                    sucesso = salvar_history_supabase(
-                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-
+                    sucesso = salvar_historico_supabase(
+                        datetime.now().isoformat(),
                         nome_atendente,
                         contato_id,
                         st.session_state["texto_editado"]
@@ -181,11 +174,26 @@ def exibir_checklist():
     except Exception as e:
         st.error(f"Erro ao carregar a planilha: {e}")
 
-aba = st.sidebar.radio("Navegação", ["Checklist", "Comentários Padrão"])
+def exibir_historico():
+    st.subheader("📚 Histórico de Análises")
+    try:
+        data = supabase.table(TABELA_HISTORICO).select("*").order("data", desc=True).limit(50).execute()
+        registros = data.data
+        if registros:
+            df = pd.DataFrame(registros)
+            st.dataframe(df)
+        else:
+            st.info("Nenhum histórico encontrado.")
+    except Exception as e:
+        st.error(f"Erro ao carregar histórico: {e}")
+
+aba = st.sidebar.radio("Navegação", ["Checklist", "Comentários Padrão", "Histórico"])
 if aba == "Checklist":
     exibir_checklist()
 elif aba == "Comentários Padrão":
     exibir_configuracoes()
+elif aba == "Histórico":
+    exibir_historico()
 
 st.markdown("""
     <div style="
