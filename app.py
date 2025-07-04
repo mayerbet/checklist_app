@@ -207,7 +207,7 @@ def exibir_historico():
             st.dataframe(df)
             if st.button("🗑️ Limpar Histórico"):
                 try:
-                    supabase.table("history").delete().execute()
+                    supabase.table("history").delete().gt("id", "00000000-0000-0000-0000-000000000000").execute()
                     st.success("Histórico limpo com sucesso.")
                     st.rerun()
                 except Exception as e:
