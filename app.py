@@ -205,7 +205,7 @@ def exibir_historico():
         if registros:
             df = pd.DataFrame(registros)
             st.dataframe(df)
-           if st.button("🗑️ Limpar Histórico"):
+            if st.button("🗑️ Limpar Histórico"):
                 try:
                     supabase.table("history").delete().execute()
                     st.success("Histórico limpo com sucesso.")
