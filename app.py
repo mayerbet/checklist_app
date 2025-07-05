@@ -205,10 +205,10 @@ def exibir_historico():
     st.subheader("📚 Histórico de Análises")
 
     usuario = st.session_state.get("usuario", "").strip()
-    st.write("🔍 Usuário ativo para busca:", repr(usuario))  # DEBUG
+    #st.write("🔍 Usuário ativo para busca:", repr(usuario))
 
     if not usuario:
-        st.warning("Informe o nome de usuário no menu lateral para visualizar seu histórico.")
+        st.info("Informe o nome de usuário no menu lateral para visualizar seu histórico.")
         return
 
     try:
