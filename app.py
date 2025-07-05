@@ -11,7 +11,7 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.title("📋 Análise de QA")
-st.markdown("Preencha o checklist abaixo. Comentários serão gerados automaticamente com base nas marcações.")
+st.markdown("Preencha o checklist. Comentários serão gerados automaticamente com base nas marcações.")
 
 @st.cache_resource
 def carregar_planilha():
@@ -67,9 +67,9 @@ usuario = st.sidebar.text_input("Digite seu nome", value=st.session_state["usuar
 st.session_state["usuario"] = usuario.strip()
 
 def exibir_configuracoes():
-    st.subheader("🛠️ Configurar Comentários Padrão")
+    st.subheader("🛠️ Configurar Comentários")
     if not usuario:
-        st.info("Insira seu nome no menu lateral para editar seus comentários padrão.")
+        st.info("Insira seu nome no menu lateral para editar seus comentários.")
         return
 
     xls = carregar_planilha()
@@ -90,10 +90,10 @@ def exibir_configuracoes():
             )
             comentarios_atualizados[topico] = novo_comentario
 
-        if st.button("💾 Salvar Comentários Padrão no Supabase"):
+        if st.button("💾 Salvar Comentários"):
             sucesso = salvar_comentarios_padrao(usuario, comentarios_atualizados)
             if sucesso:
-                st.success("Comentários padrão salvos com sucesso no Supabase!")
+                st.success("Comentários salvos com sucesso!")
 
     except Exception as e:
         st.error(f"Erro ao carregar a aba 'Config': {e}")
@@ -164,7 +164,7 @@ def exibir_checklist():
 
         if st.session_state.get("relatorio_gerado"):
             st.text_area(
-                "📝 Edite o texto gerado, se necessário:",
+                "📝 Edite o texto, se necessário:",
                 value=st.session_state.get("texto_editado", ""),
                 height=400,
                 key="texto_editado_area"
@@ -180,7 +180,7 @@ def exibir_checklist():
                         st.session_state["texto_editado"]
                     )
                     if sucesso:
-                        st.success("✔️ Análise salva com sucesso no Supabase!")
+                        st.success("✔️ Salvo com sucesso no histórico!")
                         st.session_state["relatorio_gerado"] = False
                 else:
                     st.warning("⚠️ Preencha todos os campos para salvar.")
@@ -219,7 +219,7 @@ def exibir_historico():
         st.error(f"Erro ao carregar histórico: {e}")
 
 # Navegação
-aba = st.sidebar.radio("Navegação", ["Checklist", "Comentários Padrão", "Histórico"])
+aba = st.sidebar.radio("Navegação", ["Checklist", "Comentários Padrão", "Histórico de análises"])
 if aba == "Checklist":
     exibir_checklist()
 elif aba == "Comentários Padrão":
