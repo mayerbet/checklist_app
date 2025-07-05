@@ -225,6 +225,14 @@ def exibir_historico():
 
         if registros:
             df = pd.DataFrame(registros)
+            
+            # Oculta colunas irrelevantes
+            colunas_ocultar = ["id"]
+            df = df.drop(columns=[col for col in colunas_ocultar if col in df.columns])
+    
+    # Ajusta fuso horário e mostra só a data
+            if "data" in df.columns:
+                df["data"] = pd.to_datetime(df["data"]).dt.tz_convert("America/Sao_Paulo").dt.date
             st.dataframe(df)
             if st.button("🗑️ Limpar Seu Histórico"):
                 try:
