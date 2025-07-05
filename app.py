@@ -102,6 +102,7 @@ def exibir_configuracoes():
 
 def exibir_checklist():
     st.subheader("🔢 Checklist")
+    st.markdown("Preencha o checklist. Comentários serão gerados automaticamente com base nas marcações.")
     if not usuario:
         st.info("Informe o nome de usuário no menu lateral para continuar.")
         return
