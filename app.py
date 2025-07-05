@@ -21,6 +21,7 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
     try:
         data = {
             "data": data_analise,
+            "usuario": st.session_state.get("usuario", "desconhecido"),
             "atendente": nome_atendente,
             "contato_id": contato_id,
             "resultado": texto_editado
@@ -199,27 +200,40 @@ def exibir_checklist():
 
 def exibir_historico():
     st.subheader("📚 Histórico de Análises")
-    try:
-        resultado = supabase.table("history").select("*").order("data", desc=True).limit(50).execute()
 
-        # Garante que `registros` seja uma lista
+    usuario = st.session_state.get("usuario", "").strip()
+    if not usuario:
+        st.warning("Informe o nome de usuário no menu lateral para visualizar seu histórico.")
+        return
+
+    try:
+        resultado = (
+            supabase
+            .table("history")
+            .select("*")
+            .eq("usuario", usuario)
+            .order("data", desc=True)
+            .limit(50)
+            .execute()
+        )
+
         registros = resultado.data if resultado and resultado.data else []
 
-        if registros and isinstance(registros, list) and len(registros) > 0:
+        if registros:
             df = pd.DataFrame(registros)
             st.dataframe(df)
-            if st.button("🗑️ Limpar Histórico"):
+            if st.button("🗑️ Limpar Seu Histórico"):
                 try:
-                    supabase.table("history").delete().gt("id", "00000000-0000-0000-0000-000000000000").execute()
-                    st.success("Histórico limpo com sucesso.")
+                    supabase.table("history").delete().eq("usuario", usuario).execute()
+                    st.success("Seu histórico foi limpo com sucesso.")
                     st.rerun()
                 except Exception as e:
                     st.error(f"Erro ao apagar histórico: {e}")
         else:
-            st.warning("Nenhum histórico encontrado.")
+            st.warning("Nenhum histórico encontrado para este usuário.")
+
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
-
 
 # Navegação
 aba = st.sidebar.radio("Navegação", ["Checklist", "Comentários Padrão", "Histórico de análises"])
