@@ -18,6 +18,7 @@ def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
 def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado, usuario):
+    st.write("DEBUG - Usuário recebido:", usuario)
     try:
         data = {
             "data": data_analise,
