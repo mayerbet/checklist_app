@@ -202,7 +202,7 @@ def exibir_historico():
     try:
         data = supabase.table("history").select("*").order("data", desc=True).limit(50).execute()
         registros = data.data or []
-        if registros:
+        if len(registros) > 0:
             df = pd.DataFrame(registros)
             st.dataframe(df)
             if st.button("🗑️ Limpar Histórico"):
