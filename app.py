@@ -18,7 +18,7 @@ def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
 def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado, usuario):
-       try:
+    try:
         data = {
             "data": data_analise,
             "atendente": nome_atendente,
@@ -28,9 +28,9 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
         }
         res = supabase.table("history").insert(data).execute()
         return bool(res and res.data)
-        except Exception as e:
-            st.error(f"Exceção ao salvar no Supabase: {e}")
-            return False
+    except Exception as e:
+        st.error(f"Exceção ao salvar no Supabase: {e}")
+        return False
 
 def salvar_comentarios_padrao(usuario, comentarios):
     try:
@@ -235,10 +235,6 @@ def exibir_historico():
                     st.error(f"Erro ao apagar histórico: {e}")
         else:
             st.warning("Nenhum histórico encontrado para este usuário.")
-
-    except Exception as e:
-        st.error(f"Erro ao carregar histórico: {e}")
-
 
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
