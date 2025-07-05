@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from supabase import create_client
+import pytz
 
 # Lê as credenciais do secrets.toml
 SUPABASE_URL = st.secrets["supabase"]["url"]
