@@ -200,10 +200,12 @@ def exibir_checklist():
 def exibir_historico():
     st.subheader("📚 Histórico de Análises")
     try:
-        data = supabase.table("history").select("*").order("data", desc=True).limit(50).execute()
-        registros = data.data or []  # garante que seja uma lista, mesmo se for None
+        resultado = supabase.table("history").select("*").order("data", desc=True).limit(50).execute()
 
-        if len(registros) > 0:
+        # Garante que `registros` seja uma lista
+        registros = resultado.data if resultado and resultado.data else []
+
+        if registros and isinstance(registros, list) and len(registros) > 0:
             df = pd.DataFrame(registros)
             st.dataframe(df)
             if st.button("🗑️ Limpar Histórico"):
@@ -214,9 +216,10 @@ def exibir_historico():
                 except Exception as e:
                     st.error(f"Erro ao apagar histórico: {e}")
         else:
-            st.info("Nenhum histórico encontrado.")
+            st.warning("Nenhum histórico encontrado.")
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
+
 
 # Navegação
 aba = st.sidebar.radio("Navegação", ["Checklist", "Comentários Padrão", "Histórico de análises"])
