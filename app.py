@@ -250,7 +250,7 @@ if aba == "Checklist":
     exibir_checklist()
 elif aba == "Comentários Padrão":
     exibir_configuracoes()
-elif aba == "Histórico":
+elif aba == "Histórico de análises":
     exibir_historico()
 
 st.markdown("""
