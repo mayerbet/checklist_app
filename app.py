@@ -28,9 +28,9 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
         }
         res = supabase.table("history").insert(data).execute()
         return bool(res and res.data)
-    except Exception as e:
-        st.error(f"Exceção ao salvar no Supabase: {e}")
-        return False
+        except Exception as e:
+            st.error(f"Exceção ao salvar no Supabase: {e}")
+            return False
 
 def salvar_comentarios_padrao(usuario, comentarios):
     try:
