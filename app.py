@@ -17,21 +17,21 @@ st.markdown("Preencha o checklist. Comentários serão gerados automaticamente c
 def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
-def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado):
+def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado, usuario):
     try:
         data = {
             "data": data_analise,
             "atendente": nome_atendente,
             "contato_id": contato_id,
             "resultado": texto_editado,
-            "usuario": st.session_state.get("usuario", "").strip()  # ✅ Adicionado!
+            "usuario": usuario
         }
         res = supabase.table("history").insert(data).execute()
         return bool(res and res.data)
     except Exception as e:
         st.error(f"Exceção ao salvar no Supabase: {e}")
         return False
-        
+
 def salvar_comentarios_padrao(usuario, comentarios):
     try:
         registros = [
@@ -178,8 +178,10 @@ def exibir_checklist():
                         datetime.now().isoformat(),
                         nome_atendente,
                         contato_id,
-                        st.session_state["texto_editado"]
+                        st.session_state["texto_editado"],
+                        usuario  
                     )
+
                     if sucesso:
                         st.success("✔️ Salvo com sucesso no histórico!")
                         st.session_state["relatorio_gerado"] = False
