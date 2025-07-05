@@ -21,17 +21,17 @@ def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_ed
     try:
         data = {
             "data": data_analise,
-            "usuario": st.session_state.get("usuario", "desconhecido"),
             "atendente": nome_atendente,
             "contato_id": contato_id,
-            "resultado": texto_editado
+            "resultado": texto_editado,
+            "usuario": st.session_state.get("usuario", "").strip()  # ✅ Adicionado!
         }
         res = supabase.table("history").insert(data).execute()
         return bool(res and res.data)
     except Exception as e:
         st.error(f"Exceção ao salvar no Supabase: {e}")
         return False
-
+        
 def salvar_comentarios_padrao(usuario, comentarios):
     try:
         registros = [
