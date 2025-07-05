@@ -180,7 +180,7 @@ def exibir_checklist():
                         nome_atendente,
                         contato_id,
                         st.session_state["texto_editado"],
-                        usuario  
+                        st.session_state.get("usuario", "").strip()  
                     )
 
                     if sucesso:
