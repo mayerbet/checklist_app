@@ -201,7 +201,8 @@ def exibir_historico():
     st.subheader("📚 Histórico de Análises")
     try:
         data = supabase.table("history").select("*").order("data", desc=True).limit(50).execute()
-        registros = data.data or []
+        registros = data.data or []  # garante que seja uma lista, mesmo se for None
+
         if len(registros) > 0:
             df = pd.DataFrame(registros)
             st.dataframe(df)
@@ -212,7 +213,6 @@ def exibir_historico():
                     st.rerun()
                 except Exception as e:
                     st.error(f"Erro ao apagar histórico: {e}")
-
         else:
             st.info("Nenhum histórico encontrado.")
     except Exception as e:
