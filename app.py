@@ -201,7 +201,7 @@ def exibir_historico():
     st.subheader("📚 Histórico de Análises")
     try:
         data = supabase.table("history").select("*").order("data", desc=True).limit(50).execute()
-        registros = data.data
+        registros = data.data or []
         if registros:
             df = pd.DataFrame(registros)
             st.dataframe(df)
