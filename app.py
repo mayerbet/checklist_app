@@ -18,8 +18,7 @@ def carregar_planilha():
     return pd.ExcelFile("checklist_modelo.xlsx")
 
 def salvar_historico_supabase(data_analise, nome_atendente, contato_id, texto_editado, usuario):
-    st.write("DEBUG - Usuário recebido:", usuario)
-    try:
+       try:
         data = {
             "data": data_analise,
             "atendente": nome_atendente,
@@ -205,6 +204,8 @@ def exibir_historico():
     st.subheader("📚 Histórico de Análises")
 
     usuario = st.session_state.get("usuario", "").strip()
+    st.write("🔎 Buscando histórico para usuário:", usuario)  # DEBUG
+
     if not usuario:
         st.warning("Informe o nome de usuário no menu lateral para visualizar seu histórico.")
         return
@@ -234,6 +235,10 @@ def exibir_historico():
                     st.error(f"Erro ao apagar histórico: {e}")
         else:
             st.warning("Nenhum histórico encontrado para este usuário.")
+
+    except Exception as e:
+        st.error(f"Erro ao carregar histórico: {e}")
+
 
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
