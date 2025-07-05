@@ -12,7 +12,6 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.title("📋 Análise de QA")
-st.markdown("Preencha o checklist. Comentários serão gerados automaticamente com base nas marcações.")
 
 @st.cache_resource
 def carregar_planilha():
