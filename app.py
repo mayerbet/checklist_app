@@ -204,7 +204,7 @@ def exibir_historico():
     st.subheader("📚 Histórico de Análises")
 
     usuario = st.session_state.get("usuario", "").strip()
-    st.write("🔍 Usuário ativo para busca:", repr(usuario)) # DEBUG
+    st.write("🔍 Usuário ativo para busca:", repr(usuario))  # DEBUG
 
     if not usuario:
         st.warning("Informe o nome de usuário no menu lateral para visualizar seu histórico.")
@@ -221,12 +221,7 @@ def exibir_historico():
             .execute()
         )
 
-        #registros = resultado.data if resultado and resultado.data else []
-        if not resultado or not resultado.data:
-            st.warning("Nenhum dado retornado da consulta.")
-            st.write("⚠️ Resultado bruto:", resultado)
-            return
-
+        registros = resultado.data if resultado and resultado.data else []
 
         if registros:
             df = pd.DataFrame(registros)
