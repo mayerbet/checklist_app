@@ -175,19 +175,23 @@ def exibir_checklist():
             contato_id = st.text_input("ID do atendimento:", key="contato_id")
             if st.button("📅 Salvar Histórico"):
                 if nome_atendente and contato_id:
+                # ✅ Sincroniza o texto realmente editado pelo usuário
+                    st.session_state["texto_editado"] = st.session_state.get("texto_editado_area", "")
+
                     sucesso = salvar_historico_supabase(
                         datetime.now().isoformat(),
                         nome_atendente,
                         contato_id,
                         st.session_state["texto_editado"],
-                        st.session_state.get("usuario", "").strip()  
+                        st.session_state.get("usuario", "").strip()
                     )
 
-                    if sucesso:
-                        st.success("✔️ Salvo com sucesso no histórico!")
-                        st.session_state["relatorio_gerado"] = False
-                else:
-                    st.warning("⚠️ Preencha todos os campos para salvar.")
+        if sucesso:
+            st.success("✔️ Salvo com sucesso no histórico!")
+            st.session_state["relatorio_gerado"] = False
+    else:
+        st.warning("⚠️ Preencha todos os campos para salvar.")
+
 
         if st.button("🧹 Limpar"):
             for i in range(len(checklist)):
