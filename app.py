@@ -189,8 +189,8 @@ def exibir_checklist():
         if sucesso:
             st.success("✔️ Salvo com sucesso no histórico!")
             st.session_state["relatorio_gerado"] = False
-    else:
-        st.warning("⚠️ Preencha todos os campos para salvar.")
+        else:
+            st.warning("⚠️ Preencha todos os campos para salvar.")
 
 
         if st.button("🧹 Limpar"):
