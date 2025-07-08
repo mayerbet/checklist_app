@@ -164,7 +164,7 @@ def exibir_checklist():
             st.session_state["texto_editado"] = texto_gerado
             st.session_state["relatorio_gerado"] = True
 
-        if st.session_state.get("relatorio_gerado"):
+                if st.session_state.get("relatorio_gerado"):
             st.text_area(
                 "📝 Edite o texto, se necessário:",
                 value=st.session_state.get("texto_editado", ""),
@@ -173,11 +173,12 @@ def exibir_checklist():
             )
             nome_atendente = st.text_input("Nome do atendente:", key="nome_atendente")
             contato_id = st.text_input("ID do atendimento:", key="contato_id")
+            
             if st.button("📅 Salvar Histórico"):
                 if nome_atendente and contato_id:
-                # ✅ Sincroniza o texto realmente editado pelo usuário
+                    # ✅ Sincroniza com o conteúdo realmente editado
                     st.session_state["texto_editado"] = st.session_state.get("texto_editado_area", "")
-
+                    
                     sucesso = salvar_historico_supabase(
                         datetime.now().isoformat(),
                         nome_atendente,
@@ -190,17 +191,18 @@ def exibir_checklist():
                         st.success("✔️ Salvo com sucesso no histórico!")
                         st.session_state["relatorio_gerado"] = False
                     else:
-                        st.warning("⚠️ Preencha todos os campos para salvar.")
+                        st.error("❌ Ocorreu um erro ao salvar no histórico.")
+                else:
+                    st.warning("⚠️ Preencha todos os campos para salvar.")
 
-
-        if st.button("🧹 Limpar"):
+        # ✅ Botão "Limpar" sempre visível após geração de relatório
+        if st.session_state.get("relatorio_gerado") and st.button("🧹 Limpar"):
             for i in range(len(checklist)):
                 st.session_state.pop(f"resp_{i}", None)
                 st.session_state.pop(f"coment_{i}_text_area", None)
             st.session_state["texto_editado"] = ""
             st.session_state["relatorio_gerado"] = False
             st.rerun()
-
 
     except Exception as e:
         st.error(f"Erro ao carregar checklist: {e}")
