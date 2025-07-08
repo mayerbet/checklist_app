@@ -198,7 +198,7 @@ def exibir_checklist():
             # ✅ Botão "Limpar" visível após gerar relatório
             if st.button("🧹 Limpar"):
                 for i in range(len(checklist)):
-                    st.session_state[f"resp_{i}"] = "OK"  # Reset explicito
+                    st.session_state.pop(f"resp_{i}", None)
                     st.session_state.pop(f"coment_{i}_text_area", None)
                 st.session_state["texto_editado"] = ""
                 st.session_state["relatorio_gerado"] = False
