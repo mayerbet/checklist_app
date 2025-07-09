@@ -102,7 +102,7 @@ def exibir_configuracoes():
 def exibir_checklist():
     st.subheader("🔢 Checklist")
     st.markdown("Preencha o checklist. Comentários serão gerados automaticamente com base nas marcações.")
-    
+
     if not usuario:
         st.info("Informe o nome de usuário no menu lateral para continuar.")
         return
@@ -112,16 +112,15 @@ def exibir_checklist():
         checklist_df = pd.read_excel(xls, sheet_name="Checklist")
         checklist = checklist_df.iloc[1:].reset_index(drop=True)
         checklist.columns = ['Index', 'Topico', 'Marcacao', 'Comentario', 'Observacoes', 'Relatorio']
-        num_topicos = checklist.shape[0]
 
-        # ✅ Botão "Limpar" — deve ser processado antes da exibição dos widgets
-        if st.session_state.get("relatorio_gerado") and st.button("🧹 Limpar"):
-            for i in range(num_topicos):
-                st.session_state[f"resp_{i}"] = "OK"
+        # ✅ Botão de limpar colocado ANTES de renderizar qualquer widget
+        if st.button("🧹 Limpar"):
+            for i in range(len(checklist)):
+                st.session_state.pop(f"resp_{i}", None)
                 st.session_state.pop(f"coment_{i}_text_area", None)
             st.session_state["texto_editado"] = ""
             st.session_state["relatorio_gerado"] = False
-            st.rerun()
+            st.rerun()  # ✅ Reroda o app já com os estados resetados
 
         comentarios_usuario = carregar_comentarios_padrao(usuario)
         respostas = []
@@ -148,7 +147,6 @@ def exibir_checklist():
                         key=f"coment_{i}_text_area",
                         height=100
                     )
-
             respostas.append({
                 "Topico": topico,
                 "Marcacao": resposta,
@@ -188,9 +186,7 @@ def exibir_checklist():
 
             if st.button("📅 Salvar Histórico"):
                 if nome_atendente and contato_id:
-                    # ✅ Garante salvar a versão editada do texto
                     st.session_state["texto_editado"] = st.session_state.get("texto_editado_area", "")
-                    
                     sucesso = salvar_historico_supabase(
                         datetime.now().isoformat(),
                         nome_atendente,
@@ -198,18 +194,16 @@ def exibir_checklist():
                         st.session_state["texto_editado"],
                         st.session_state.get("usuario", "").strip()
                     )
-
                     if sucesso:
                         st.success("✔️ Salvo com sucesso no histórico!")
                         st.session_state["relatorio_gerado"] = False
                     else:
-                        st.error("❌ Ocorreu um erro ao salvar no histórico.")
+                        st.error("❌ Erro ao salvar no histórico.")
                 else:
                     st.warning("⚠️ Preencha todos os campos para salvar.")
 
     except Exception as e:
         st.error(f"Erro ao carregar checklist: {e}")
-
 
 def exibir_historico():
     st.subheader("📚 Histórico de Análises")
