@@ -14,9 +14,9 @@ def exibir_guia(usuario):
         topicos = df_guia["TÓPICOS"].dropna().tolist()
         topico_selecionado = st.selectbox("🔍 Selecione um tópico:", topicos)
 
-        # Mostra a descrição correspondente
-        descricao = df_guia.loc[df_guia["TÓPICOS"] == topico_selecionado, "Descrição"].values[0]
-        st.markdown(f"### 📝 Descrição do tópico:\n\n{descricao}")
+        # Mostra a DESCRIÇÃO correspondente
+        descricao = df_guia.loc[df_guia["TÓPICOS"] == topico_selecionado, "DESCRIÇÃO"].values[0]
+        st.markdown(f"### 📝 DESCRIÇÃO do tópico:\n\n{descricao}")
 
     except Exception as e:
         st.error(f"Erro ao carregar o guia: {e}")
