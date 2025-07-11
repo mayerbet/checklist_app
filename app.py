@@ -9,7 +9,7 @@ st.title("📋 Análise de QA")
 from components.checklist import exibir_checklist
 from components.historico import exibir_historico
 from components.comentarios import exibir_configuracoes
-from pages.guia import exibir_guia
+from components.guia import exibir_guia
 
 # Sidebar - Seleção de usuário
 st.sidebar.subheader("👤 Usuário")
