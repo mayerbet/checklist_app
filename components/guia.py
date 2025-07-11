@@ -11,11 +11,11 @@ def exibir_guia(usuario):
         df_guia = carregar_guia_qualidade()
 
         # Menu de seleção de tópico
-        topicos = df_guia["Tópico"].dropna().tolist()
+        topicos = df_guia["Tópicos"].dropna().tolist()
         topico_selecionado = st.selectbox("🔍 Selecione um tópico:", topicos)
 
         # Mostra a descrição correspondente
-        descricao = df_guia.loc[df_guia["Tópico"] == topico_selecionado, "Descrição"].values[0]
+        descricao = df_guia.loc[df_guia["Tópicos"] == topico_selecionado, "Descrição"].values[0]
         st.markdown(f"### 📝 Descrição do tópico:\n\n{descricao}")
 
     except Exception as e:
