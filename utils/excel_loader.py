@@ -9,3 +9,7 @@ def carregar_planilha():
         st.error("Arquivo checklist_modelo.xlsx não encontrado no diretório raiz do projeto.")
         return None
 
+def carregar_guia_qualidade():
+    return pd.read_excel("guia.xlsx") 
+
+
