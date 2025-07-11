@@ -1,5 +1,3 @@
-# components/guia.py
-
 import streamlit as st
 import pandas as pd
 from utils.excel_loader import carregar_guia_qualidade
@@ -10,13 +8,15 @@ def exibir_guia(usuario):
     try:
         df_guia = carregar_guia_qualidade()
 
-        # Menu de seleção de tópico
-        topicos = df_guia["TÓPICOS"].dropna().tolist()
-        topico_selecionado = st.selectbox("🔍 Selecione um tópico:", topicos)
+        for _, row in df_guia.iterrows():
+            topico = row["TÓPICOS"]
+            descricao = row["DESCRIÇÃO"]
 
-        # Mostra a DESCRIÇÃO correspondente
-        descricao = df_guia.loc[df_guia["TÓPICOS"] == topico_selecionado, "DESCRIÇÃO"].values[0]
-        st.markdown(f"### 📝 DESCRIÇÃO do tópico:\n\n{descricao}")
+            # Substitui quebras de linha por <br> e permite HTML
+            descricao_formatada = descricao.replace("\n", "<br>")
+
+            with st.expander(f"🔹 {topico}"):
+                st.markdown(descricao_formatada, unsafe_allow_html=True)
 
     except Exception as e:
         st.error(f"Erro ao carregar o guia: {e}")
