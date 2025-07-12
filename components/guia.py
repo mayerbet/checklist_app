@@ -3,6 +3,8 @@ import streamlit as st
 import pandas as pd
 from utils.excel_loader import carregar_guia_qualidade
 from collections import defaultdict
+from utils.html_formatter import formatar_html_guia
+
 
 def formatar_html_guia(texto):
     """Aplica formatação HTML ao conteúdo vindo do Excel."""
