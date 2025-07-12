@@ -46,7 +46,7 @@ elif aba == "Guia de Qualidade":
     exibir_guia(usuario)
 
 
-    st.markdown("""
+st.markdown("""
     <div style="
     position: fixed;
     bottom: 80px;
