@@ -21,7 +21,7 @@ from components.guia import exibir_guia
 usuario = st.session_state.get("usuario_logado", "")
 
 # Sidebar
-st.sidebar.markdown(f"👤 **Usuário logado:** `{usuario}`")
+st.sidebar.markdown(f"👤 `{usuario}`")
 if st.sidebar.button("🚪 Logout"):
     for key in ["logado", "usuario_logado"]:
         st.session_state.pop(key, None)
