@@ -23,9 +23,9 @@ def autenticar_usuario(nome, senha):
 
 def exibir_login():
     st.set_page_config(page_title="Login - Análise QA")
-    st.title("🔐 Login - Análise QA")
+    st.title("Análise de QA")
 
-    aba = st.radio("Acesso", ["Entrar", "Criar Conta"])
+    aba = st.radio("🔐 Login", ["Entrar", "Criar Conta"])
     nome = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
 
