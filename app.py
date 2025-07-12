@@ -1,4 +1,9 @@
 import streamlit as st
+from components.auth import exibir_login
+
+if "logado" not in st.session_state or not st.session_state["logado"]:
+    exibir_login()
+    st.stop()  # Impede que o app continue se não estiver logado
 
 # Configuração inicial do app
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
