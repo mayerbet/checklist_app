@@ -22,7 +22,7 @@ usuario = st.session_state.get("usuario_logado", "")
 
 # Sidebar
 st.sidebar.markdown(f"👤 `{usuario}`")
-if st.sidebar.button("🚪 Logout"):
+if st.sidebar.button("⏻ Logout"):
     for key in ["logado", "usuario_logado"]:
         st.session_state.pop(key, None)
     st.rerun()
