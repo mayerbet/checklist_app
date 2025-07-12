@@ -70,7 +70,7 @@ def exibir_checklist(usuario):
                     prefixo = "🟡 N/A:" if r["Marcacao"] == "N/A" else "❌"
                     comentario_final = f"{prefixo} {comentario_padrao}"
                     if r["ComentarioManual"]:
-                        comentario_final += f" ({r['ComentarioManual']})"
+                        comentario_final += f" (Obs: {r['ComentarioManual']})"
                     comentarios.append((r["Indice"], comentario_final, r["Marcacao"]))
 
             ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
