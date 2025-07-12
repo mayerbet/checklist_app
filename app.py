@@ -16,9 +16,16 @@ from components.historico import exibir_historico
 from components.comentarios import exibir_configuracoes
 from components.guia import exibir_guia
 
-# Sidebar - Seleção de usuário
+# Sidebar - Usuário logado
 if st.session_state.get("autenticado"):
     st.sidebar.markdown(f"👤 **Usuário logado:** `{st.session_state['usuario_logado']}`")
+    if st.sidebar.button("🚪 Logout"):
+        for key in ["autenticado", "usuario_logado"]:
+            st.session_state.pop(key, None)
+        st.rerun()
+
+# Define o usuário para uso interno no app
+usuario = st.session_state.get("usuario_logado", "")
 
 # Navegação por abas
 aba = st.sidebar.radio("Navegação", [
@@ -37,12 +44,7 @@ elif aba == "Histórico de análises":
     exibir_historico(usuario)
 elif aba == "Guia de Qualidade":
     exibir_guia(usuario)
-    
-if st.session_state.get("autenticado"):
-    if st.sidebar.button("🚪 Logout"):
-        for key in ["autenticado", "usuario_logado"]:
-            st.session_state.pop(key, None)
-        st.rerun()
+
 
     st.markdown("""
     <div style="
