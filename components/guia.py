@@ -24,7 +24,7 @@ def exibir_guia(usuario):
 
         for area, topicos in areas_agrupadas.items():
             expanded_area = (area == area_aberta)
-            with st.expander(f"📂 {area}", expanded=expanded_area):
+            with st.expander(f"🟢 {area}", expanded=expanded_area):
                 if expanded_area:
                     st.session_state["area_aberta"] = area
                 for item in topicos:
@@ -32,7 +32,7 @@ def exibir_guia(usuario):
                     descricao = item["descricao"]
                     descricao_formatada = formatar_html_guia(descricao)
 
-                    with st.expander(f"🔸 {topico}", expanded=False):
+                    with st.expander(f"🔹 {topico}", expanded=False):
                         st.markdown(descricao_formatada, unsafe_allow_html=True)
 
     except Exception as e:
