@@ -28,7 +28,7 @@ def autenticar_usuario(nome, senha):
         return False
 
 def exibir_login():
-    st.title("🔐 Login - Checklist de Qualidade")
+    st.title("🔐 Login -Análise QA")
 
     aba = st.radio("Acesso", ["Entrar", "Criar Conta"])
 
