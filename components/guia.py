@@ -5,19 +5,6 @@ from utils.excel_loader import carregar_guia_qualidade
 from collections import defaultdict
 from utils.html_formatter import formatar_html_guia
 
-
-def formatar_html_guia(texto):
-    """Aplica formatação HTML ao conteúdo vindo do Excel."""
-    texto = texto.replace("**", "<strong>")
-    texto = texto.replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;")
-    texto = texto.replace("\n", "<br>")
-
-    # Corrige títulos que vêm como ### Título
-    texto = texto.replace("###", "<h4>").replace("<br><h4>", "<h4>")  # evita quebrar linha antes de h4
-    texto = texto.replace(":", "</h4>:")  # fecha o h4 ao final do título
-
-    return texto
-
 def exibir_guia(usuario):
     st.subheader("📘 Guia de Qualidade")
 
