@@ -3,18 +3,17 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from services.historico_service import salvar_historico_supabase
-from services.comentarios_service import carregar_comentarios_padrao
+from services.comentarios_service import carregar_comentarios_padrao, salvar_comentarios_padrao
 from utils.excel_loader import carregar_planilha
 from components.auth_guard import proteger_pagina, mostrar_sidebar
-
-# ✅ Verificação de autenticação
-usuario = proteger_pagina()
-mostrar_sidebar(usuario)
-
 
 # ✅ Título da página
 st.set_page_config(page_title="Comentarios", layout="wide")
 st.title("Comentários Padrão")
+
+# ✅ Verificação de autenticação
+usuario = proteger_pagina()
+mostrar_sidebar(usuario)
 
 st.markdown("Registre seus comentários")
 
