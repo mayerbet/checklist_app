@@ -32,7 +32,7 @@ def exibir_login():
     # Delay controlado após login
     if st.session_state.get("aguardar_rerun"):
         st.session_state.pop("aguardar_rerun")  # limpa a flag
-        st.experimental_rerun()  # faz o rerun "limpo" e só uma vez
+        st.rerun()  # faz o rerun "limpo" e só uma vez
         return
 
     if aba == "Entrar":
