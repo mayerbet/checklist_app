@@ -33,8 +33,8 @@ def exibir_checklist(usuario):
             st.rerun()
 
         # Carregar aba do guia em dicionário
-        df = carregar_guia_qualidade()  
-        guia_dict = dict(zip(guia['TÓPICOS'], guia['DESCRIÇÃO']))
+        guia_df = carregar_guia_qualidade()
+        guia_dict = dict(zip(guia_df['TÓPICOS'], guia_df['DESCRIÇÃO']))
         comentarios_usuario = carregar_comentarios_padrao(usuario)
         respostas = []
         
