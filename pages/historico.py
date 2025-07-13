@@ -14,7 +14,7 @@ if "logado" not in st.session_state or not st.session_state["logado"]:
 usuario = st.session_state["usuario_logado"]
 
 # ✅ Título da página
-st.set_page_config(page_title="historico", layout="wide")
+st.set_page_config(page_title="Historico", layout="wide")
 st.title("Historico")
 
 st.markdown("Lista das análises realizadas")
