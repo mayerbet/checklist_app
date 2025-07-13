@@ -29,7 +29,7 @@ def exibir_configuracoes(usuario: str):
             )
             comentarios_atualizados[topico] = novo_comentario
 
-        if st.button("💾 Salvar Comentários"):
+        if st.button("💾 Salvar"):
             sucesso = salvar_comentarios_padrao(usuario, comentarios_atualizados)
             if sucesso:
                 st.success("Comentários salvos com sucesso!")
