@@ -35,7 +35,7 @@ def exibir_login():
                 st.session_state["logado"] = True
                 st.session_state["usuario_logado"] = nome
                 st.success("✅ Login realizado com sucesso!")
-                st.experimental_rerun()  # 🔁 FORÇA O APP A RECARREGAR JÁ COM O USUÁRIO LOGADO
+                
             else:
                 st.error("❌ Usuário ou senha inválidos.")
     else:
