@@ -28,12 +28,10 @@ with col3:
     if st.button("⏻ Logout"):
         for key in ["logado", "usuario_logado"]:
             st.session_state.pop(key, None)
-        st.rerun()
-
-    
+        st.rerun()  
 
 # ✅ Navegação horizontal no topo
-pagina = st.radio("Selecione uma seção:", ["Checklist", "Comentários Padrão", "Histórico", "Guia"], horizontal=True)
+pagina = st.radio("Menu", ["Checklist", "Comentários Padrão", "Histórico", "Guia"], horizontal=True)
 
 # ✅ Redirecionamento
 from components import checklist_radio, comentarios_radio, historico_radio, guia_radio
