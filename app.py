@@ -1,13 +1,18 @@
 import streamlit as st
 from components.auth import exibir_login
 
-# Impede acesso se não estiver logado
+# Inicializa a flag se não existir
 if "logado" not in st.session_state:
     st.session_state["logado"] = False
 
+# ✅ Se ainda não logado, verifica se deve rerodar
 if not st.session_state["logado"]:
-    exibir_login()
-    st.stop()
+    if st.session_state.get("aguardar_rerun"):
+        st.session_state.pop("aguardar_rerun")
+        st.experimental_rerun()  # agora sim, rerun suave
+    else:
+        exibir_login()
+        st.stop()
 
 # Configuração do app
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
