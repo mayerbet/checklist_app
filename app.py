@@ -20,16 +20,16 @@ usuario = st.session_state.get("usuario_logado", "")
 # ✅ Config inicial
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
-col1, col2, col3 = st.columns([3, 2, 1])
+col1, col3 = st.columns([3, 1])
 with col1:
     st.title("📋 Análise de QA")
-with col2:
+with col3:
     st.markdown(f"👤 Usuário: **{usuario}**")
     if st.button("⏻ Logout"):
         for key in ["logado", "usuario_logado"]:
             st.session_state.pop(key, None)
         st.rerun()
-#with col3:
+
     
 
 # ✅ Navegação horizontal no topo
