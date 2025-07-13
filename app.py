@@ -26,7 +26,7 @@ st.title("📋 Análise de QA")
 pagina = st.radio("Selecione uma seção:", ["Checklist", "Comentários Padrão", "Histórico", "Guia"], horizontal=True)
 
 # ✅ Redirecionamento
-from pages import checklist, comentarios, historico, guia
+from components import checklist, comentarios, historico, guia
 
 if pagina == "Checklist":
     checklist.exibir_checklist(usuario)
