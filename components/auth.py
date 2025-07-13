@@ -35,6 +35,7 @@ def exibir_login():
                 st.session_state["logado"] = True
                 st.session_state["usuario_logado"] = nome  # 👈 Correto aqui!
                 st.experimental_rerun()
+                st.stop()
             else:
                 st.error("Usuário ou senha inválidos.")
     else:
