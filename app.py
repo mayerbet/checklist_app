@@ -22,7 +22,7 @@ col1, col2, col3 = st.columns([3, 2, 1])
 with col1:
     st.title("📋 Análise de QA")
 with col2:
-    st.markdown(f"👤 `{usuario}`", unsafe_allow_html=True)
+    st.markdown(f"👤 Usuário: **{usuario}**")
 with col3:
     if st.button("⏻ Logout"):
         for key in ["logado", "usuario_logado"]:
