@@ -33,9 +33,9 @@ def exibir_login():
         if st.button("Entrar"):
             if autenticar_usuario(nome, senha):
                 st.session_state["logado"] = True
-                st.session_state["usuario_logado"] = nome  # 👈 Correto aqui!
-                st.experimental_rerun()
-                st.stop()
+                st.session_state["usuario_logado"] = nome
+                st.success("Login realizado com sucesso!")
+
             else:
                 st.error("Usuário ou senha inválidos.")
     else:
