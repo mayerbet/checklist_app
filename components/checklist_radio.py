@@ -6,6 +6,7 @@ from datetime import datetime
 from services.historico_service import salvar_historico_supabase
 from services.comentarios_service import carregar_comentarios_padrao
 from utils.excel_loader import carregar_planilha, carregar_guia_qualidade
+from utils.html_formater import formatar_html_guia, gerar_popup_guia
 
 def exibir_checklist(usuario):
     st.markdown("<a name='top'></a>", unsafe_allow_html=True)
