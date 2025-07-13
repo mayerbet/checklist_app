@@ -8,11 +8,6 @@ if "logado" not in st.session_state:
 if not st.session_state["logado"]:
     exibir_login()
     st.stop()
-else:
-    # ✅ Reroda o app automaticamente após login
-    if not st.session_state.get("app_carregado"):
-        st.session_state["app_carregado"] = True
-        st.experimental_rerun()
 
 # Configuração do app
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
