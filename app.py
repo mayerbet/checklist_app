@@ -9,7 +9,7 @@ if "logado" not in st.session_state:
 if not st.session_state["logado"]:
     if st.session_state.get("aguardar_rerun"):
         st.session_state.pop("aguardar_rerun")
-        st.experimental_rerun()  # agora sim, rerun suave
+        st.rerun()  # agora sim, rerun suave
     else:
         exibir_login()
         st.stop()
