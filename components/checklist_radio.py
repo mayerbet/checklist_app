@@ -8,9 +8,10 @@ from services.comentarios_service import carregar_comentarios_padrao
 from utils.excel_loader import carregar_planilha
 
 def exibir_checklist(usuario):
+    st.markdown("<a name='top'></a>", unsafe_allow_html=True)
     st.subheader("🔢 Checklist")
     st.markdown("Preencha o checklist. Comentários serão gerados automaticamente com base nas marcações.")
-
+    
     if not usuario:
         st.info("Informe o nome de usuário no menu lateral para continuar.")
         return
