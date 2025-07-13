@@ -25,9 +25,9 @@ with col2:
     st.markdown(f"👤 `{usuario}`", unsafe_allow_html=True)
 with col3:
     if st.button("⏻ Logout"):
-    for key in ["logado", "usuario_logado"]:
-        st.session_state.pop(key, None)
-    st.rerun()
+        for key in ["logado", "usuario_logado"]:
+            st.session_state.pop(key, None)
+        st.rerun()
 
 # ✅ Config inicial
 st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
