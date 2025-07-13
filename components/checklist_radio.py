@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 from services.historico_service import salvar_historico_supabase
 from services.comentarios_service import carregar_comentarios_padrao
-from utils.excel_loader import carregar_planilha
+from utils.excel_loader import carregar_planilha, carregar_guia_qualidade
 
 def exibir_checklist(usuario):
     st.markdown("<a name='top'></a>", unsafe_allow_html=True)
@@ -31,12 +31,29 @@ def exibir_checklist(usuario):
             st.session_state["relatorio_gerado"] = False
             st.rerun()
 
+        # Carregar aba do guia em dicionário
+        df = carregar_guia_qualidade()  
+        guia_dict = dict(zip(guia['TÓPICOS'], guia['DESCRIÇÃO']))
         comentarios_usuario = carregar_comentarios_padrao(usuario)
         respostas = []
+        
 
         for i, row in checklist.iterrows():
             topico = row['Topico']
-            st.markdown(f"### {topico}")
+    
+            # NOVA ESTRUTURA: Título + Botão de guia na mesma linha
+            col_titulo, col_btn = st.columns([0.85, 0.15])
+            with col_titulo:
+                st.markdown(f"### {topico}")
+            with col_btn:
+                # Obter conteúdo formatado do guia
+                conteudo_guia = guia_dict.get(topico, "Conteúdo não disponível")
+                conteudo_formatado = formatar_html_guia(conteudo_guia)
+        
+                # Renderizar botão com popup (função importada do html_formater)
+                gerar_popup_guia(topico, conteudo_formatado)
+    
+            # ESTRUTURA ORIGINAL MANTIDA: Radio buttons + Comentário manual
             col1, col2 = st.columns([1, 3])
 
             with col1:
@@ -56,13 +73,13 @@ def exibir_checklist(usuario):
                         key=f"coment_{i}_text_area",
                         height=100
                     )
+    
             respostas.append({
                 "Topico": topico,
                 "Marcacao": resposta,
                 "ComentarioManual": comentario_manual,
                 "Indice": i
             })
-
         if st.button("✅ Gerar Relatório"):
             comentarios = []
             for r in respostas:
