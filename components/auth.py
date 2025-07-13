@@ -35,7 +35,8 @@ def exibir_login():
                 st.session_state["logado"] = True
                 st.session_state["usuario_logado"] = nome
                 st.success("✅ Login realizado com sucesso!")
-                st.experimental_rerun()
+                #st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("❌ Usuário ou senha inválidos.")
     else:
