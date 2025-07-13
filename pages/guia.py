@@ -17,7 +17,7 @@ st.title("Guia de Qualidade")
 
 st.markdown("Diretrizes de Qualidade")
 
-    try:
+try:
         df = carregar_guia_qualidade()
         
         # Agrupa os tópicos por área
