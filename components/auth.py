@@ -22,10 +22,10 @@ def autenticar_usuario(nome, senha):
         return False
 
 def exibir_login():
-    st.set_page_config(page_title="Login - Análise QA")
-    st.title("Análise de QA")
+    st.title("🔐 Login - Análise QA")
 
-    aba = st.radio("🔐 Login", ["Entrar", "Criar Conta"])
+    aba = st.radio("Acesso", ["Entrar", "Criar Conta"])
+
     nome = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
 
@@ -34,10 +34,10 @@ def exibir_login():
             if autenticar_usuario(nome, senha):
                 st.session_state["logado"] = True
                 st.session_state["usuario_logado"] = nome
-                st.success("Login realizado com sucesso!")
-
+                st.success("✅ Login realizado com sucesso!")
+                st.experimental_rerun()  # 🔁 FORÇA O APP A RECARREGAR JÁ COM O USUÁRIO LOGADO
             else:
-                st.error("Usuário ou senha inválidos.")
+                st.error("❌ Usuário ou senha inválidos.")
     else:
         if st.button("Criar Conta"):
             sucesso, msg = registrar_usuario(nome, senha)
