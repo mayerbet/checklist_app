@@ -25,11 +25,12 @@ with col1:
     st.title("📋 Análise de QA")
 with col2:
     st.markdown(f"👤 Usuário: **{usuario}**")
-with col3:
     if st.button("⏻ Logout"):
         for key in ["logado", "usuario_logado"]:
             st.session_state.pop(key, None)
         st.rerun()
+#with col3:
+    
 
 # ✅ Navegação horizontal no topo
 pagina = st.radio("Selecione uma seção:", ["Checklist", "Comentários Padrão", "Histórico", "Guia"], horizontal=True)
