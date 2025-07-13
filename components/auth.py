@@ -38,10 +38,11 @@ def exibir_login():
     if aba == "Entrar":
         if st.button("Entrar"):
             if autenticar_usuario(nome, senha):
-                st.session_state["logado"] = True
                 st.session_state["usuario_logado"] = nome
-                st.session_state["aguardar_rerun"] = True  # seta a flag
-                st.success("✅ Login realizado com sucesso!")
+                st.session_state["logado"] = True
+                st.session_state["aguardar_rerun"] = True  # ✅ adiciona essa flag
+                st.stop()  # ✅ força parada até próximo ciclo (sem precisar rerun manual)
+
             else:
                 st.error("❌ Usuário ou senha inválidos.")
     else:
