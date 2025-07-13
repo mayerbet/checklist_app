@@ -8,6 +8,7 @@ from utils.excel_loader import carregar_planilha
 from components.auth_guard import proteger_pagina, mostrar_sidebar
 
 # ✅ Título da página
+st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.set_page_config(page_title="Checklist", layout="wide")
 st.title("📋 Checklist de Qualidade")
 
