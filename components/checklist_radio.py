@@ -46,14 +46,14 @@ def exibir_checklist(usuario):
             col_titulo, col_btn = st.columns([0.85, 0.15])
             with col_titulo:
                 st.markdown(f"### {topico}")
+            # Botão exibe popup:
             with col_btn:
-                # Obter conteúdo formatado do guia
-                conteudo_guia = guia_dict.get(topico, "Conteúdo não disponível")
-                conteudo_formatado = formatar_html_guia(conteudo_guia)
-        
-                # Renderizar botão com popup (função importada do html_formater)
-                gerar_popup_guia(topico, conteudo_formatado)
-    
+                conteudo_guia = guia_dict.get(topico, "")
+                if conteudo_guia:
+                    conteudo_formatado = formatar_html_guia(conteudo_guia)
+                    gerar_popup_guia(topico, conteudo_formatado)
+                else:
+                    st.warning("Sem guia")  # Isso aparecerá se não encontrar conteúdo
             # ESTRUTURA ORIGINAL MANTIDA: Radio buttons + Comentário manual
             col1, col2 = st.columns([1, 3])
 
