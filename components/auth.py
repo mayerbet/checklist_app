@@ -29,13 +29,19 @@ def exibir_login():
     nome = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
 
+    # Delay controlado após login
+    if st.session_state.get("aguardar_rerun"):
+        st.session_state.pop("aguardar_rerun")  # limpa a flag
+        st.experimental_rerun()  # faz o rerun "limpo" e só uma vez
+        return
+
     if aba == "Entrar":
         if st.button("Entrar"):
             if autenticar_usuario(nome, senha):
                 st.session_state["logado"] = True
                 st.session_state["usuario_logado"] = nome
+                st.session_state["aguardar_rerun"] = True  # seta a flag
                 st.success("✅ Login realizado com sucesso!")
-                st.experimental_rerun()
             else:
                 st.error("❌ Usuário ou senha inválidos.")
     else:
