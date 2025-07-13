@@ -29,13 +29,13 @@ pagina = st.radio("Selecione uma seção:", ["Checklist", "Comentários Padrão"
 from components import checklist_radio, comentarios_radio, historico_radio, guia_radio
 
 if pagina == "Checklist":
-    checklist.exibir_checklist(usuario)
+    checklist_radio.exibir_checklist(usuario)
 elif pagina == "Comentários Padrão":
-    comentarios.exibir_configuracoes(usuario)
+    comentarios_radio.exibir_configuracoes(usuario)
 elif pagina == "Histórico":
-    historico.exibir_historico(usuario)
+    historico_radio.exibir_historico(usuario)
 elif pagina == "Guia":
-    guia.exibir_guia(usuario)
+    guia_radio.exibir_guia(usuario)
 
 # ✅ Logout opcional (se quiser deixar fora do sidebar)
 st.markdown(f"👤 Usuário: **{usuario}**")
