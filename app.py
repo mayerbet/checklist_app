@@ -24,7 +24,7 @@ col1, col3 = st.columns([3, 1])
 with col1:
     st.title("📋 Análise de QA")
 with col3:
-    st.markdown(f"👤 Usuário: **{usuario}**")
+    st.markdown(f"👤 **{usuario}**")
     if st.button("⏻ Logout"):
         for key in ["logado", "usuario_logado"]:
             st.session_state.pop(key, None)
