@@ -17,17 +17,29 @@ if not st.session_state["logado"]:
 # ✅ Usuário logado
 usuario = st.session_state.get("usuario_logado", "")
 
-# ✅ Config inicial
-st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
-st.markdown("<a name='top'></a>", unsafe_allow_html=True)
-st.title("📋 Análise de QA")
 
-# ✅ Logout opcional (se quiser deixar fora do sidebar)
-st.markdown(f"👤 Usuário: **{usuario}**")
-if st.button("⏻ Logout"):
+col1, col2, col3 = st.columns([3, 2, 1])
+with col1:
+    st.title("📋 Análise de QA")
+with col2:
+    st.markdown(f"👤 `{usuario}`", unsafe_allow_html=True)
+with col3:
+    if st.button("⏻ Logout"):
     for key in ["logado", "usuario_logado"]:
         st.session_state.pop(key, None)
     st.rerun()
+
+# ✅ Config inicial
+st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
+st.markdown("<a name='top'></a>", unsafe_allow_html=True)
+# st.title("📋 Análise de QA")
+
+# ✅ Logout opcional (se quiser deixar fora do sidebar)
+#st.markdown(f"👤 Usuário: **{usuario}**")
+#if st.button("⏻ Logout"):
+    #for key in ["logado", "usuario_logado"]:
+       # st.session_state.pop(key, None)
+    #st.rerun()
 
 # ✅ Navegação horizontal no topo
 pagina = st.radio("Selecione uma seção:", ["Checklist", "Comentários Padrão", "Histórico", "Guia"], horizontal=True)
