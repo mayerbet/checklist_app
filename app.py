@@ -22,6 +22,13 @@ st.set_page_config(page_title="Checklist de Qualidade", layout="wide")
 st.markdown("<a name='top'></a>", unsafe_allow_html=True)
 st.title("📋 Análise de QA")
 
+# ✅ Logout opcional (se quiser deixar fora do sidebar)
+st.markdown(f"👤 Usuário: **{usuario}**")
+if st.button("⏻ Logout"):
+    for key in ["logado", "usuario_logado"]:
+        st.session_state.pop(key, None)
+    st.rerun()
+
 # ✅ Navegação horizontal no topo
 pagina = st.radio("Selecione uma seção:", ["Checklist", "Comentários Padrão", "Histórico", "Guia"], horizontal=True)
 
@@ -37,9 +44,4 @@ elif pagina == "Histórico":
 elif pagina == "Guia":
     guia_radio.exibir_guia(usuario)
 
-# ✅ Logout opcional (se quiser deixar fora do sidebar)
-st.markdown(f"👤 Usuário: **{usuario}**")
-if st.button("⏻ Logout"):
-    for key in ["logado", "usuario_logado"]:
-        st.session_state.pop(key, None)
-    st.rerun()
+
