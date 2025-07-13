@@ -25,7 +25,7 @@ def exibir_configuracoes(usuario: str):
                 f"✏️ {topico}",
                 value=comentario_padrao,
                 key=f"coment_config_{i}",
-                height=100
+                height=200
             )
             comentarios_atualizados[topico] = novo_comentario
 
