@@ -42,7 +42,7 @@ def exibir_checklist(usuario):
             with col1:
                 resposta_default = st.session_state.get(f"resp_{i}", "OK")
                 resposta = st.radio(
-                    f"Selecione para o tópico {i+1}",
+                    f"Selecione",
                     options=['OK', 'X', 'N/A'],
                     index=['OK', 'X', 'N/A'].index(resposta_default),
                     key=f"resp_{i}"
@@ -90,8 +90,8 @@ def exibir_checklist(usuario):
                 height=400,
                 key="texto_editado_area"
             )
-            nome_atendente = st.text_input("Nome do atendente:", key="nome_atendente")
-            contato_id = st.text_input("ID do atendimento:", key="contato_id")
+            nome_atendente = st.text_input("Nome do GC:", key="nome_atendente")
+            contato_id = st.text_input("ID do chat:", key="contato_id")
 
             if st.button("📅 Salvar Histórico"):
                 if nome_atendente and contato_id:
@@ -104,7 +104,7 @@ def exibir_checklist(usuario):
                         usuario
                     )
                     if sucesso:
-                        st.success("✔️ Salvo com sucesso no histórico!")
+                        st.success("✔️ Salvo com sucesso!")
                         st.session_state["relatorio_gerado"] = False
                     else:
                         st.error("❌ Erro ao salvar no histórico.")
