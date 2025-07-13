@@ -5,13 +5,11 @@ from datetime import datetime
 from services.historico_service import salvar_historico_supabase
 from services.comentarios_service import carregar_comentarios_padrao
 from utils.excel_loader import carregar_planilha
+from components.auth_guard import proteger_pagina, mostrar_sidebar
 
 # ✅ Verificação de autenticação
-if "logado" not in st.session_state or not st.session_state["logado"]:
-    st.warning("Você precisa estar logado para acessar esta página.")
-    st.stop()
-
-usuario = st.session_state["usuario_logado"]
+usuario = proteger_pagina()
+mostrar_sidebar(usuario)
 
 # ✅ Título da página
 st.set_page_config(page_title="Guia", layout="wide")
