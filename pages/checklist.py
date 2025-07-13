@@ -7,13 +7,13 @@ from services.comentarios_service import carregar_comentarios_padrao
 from utils.excel_loader import carregar_planilha
 from components.auth_guard import proteger_pagina, mostrar_sidebar
 
-# ✅ Verificação de autenticação
-usuario = proteger_pagina()
-mostrar_sidebar(usuario)
-
 # ✅ Título da página
 st.set_page_config(page_title="Checklist", layout="wide")
 st.title("📋 Checklist de Qualidade")
+
+# ✅ Verificação de autenticação
+usuario = proteger_pagina()
+mostrar_sidebar(usuario)
 
 st.markdown("Preencha o checklist. Comentários serão gerados automaticamente com base nas marcações.")
 
