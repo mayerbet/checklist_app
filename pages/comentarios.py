@@ -14,7 +14,7 @@ if "logado" not in st.session_state or not st.session_state["logado"]:
 usuario = st.session_state["usuario_logado"]
 
 # ✅ Título da página
-st.set_page_config(page_title="Checklist", layout="wide")
+st.set_page_config(page_title="Comentarios", layout="wide")
 st.title("Comentários Padrão")
 
 st.markdown("Registre seus comentários")
