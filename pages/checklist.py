@@ -115,4 +115,21 @@ try:
 
 except Exception as e:
     st.error(f"Erro ao carregar checklist: {e}")
-
+    
+# Fixar botão "topo"
+st.markdown("""
+    <div style="
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        z-index: 9999;
+        background-color: #005440;
+        border-radius: 18px;
+        padding: 0.6rem 1rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    ">
+    <a href='#top' style='text-decoration: none; color: white; font-size: 16px; font-weight: bold;'>
+        ToTop
+    </a>
+    </div>
+""", unsafe_allow_html=True)
