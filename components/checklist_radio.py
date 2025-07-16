@@ -72,7 +72,7 @@ def exibir_checklist(usuario):
                     if r["ComentarioManual"] and '>' in comentario_padrao:
                         comentario_formatado = comentario_padrao.replace(
                             '>',
-                            f'> (Obs: {r["ComentarioManual"]})',
+                            f'(Obs: {r["ComentarioManual"]})',
                             1  # só substitui o primeiro
                         )
 
