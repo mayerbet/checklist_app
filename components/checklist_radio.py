@@ -90,8 +90,8 @@ def exibir_checklist(usuario):
                     height=400,
                     key="texto_editado_area"
                 )
-            nome_atendente = st.text_input("Nome do GC:", key="nome_atendente")
-            contato_id = st.text_input("ID do chat:", key="contato_id")
+                nome_atendente = st.text_input("Nome do GC:", key="nome_atendente")
+                contato_id = st.text_input("ID do chat:", key="contato_id")
 
             if st.button("📅 Salvar Histórico"):
                 if nome_atendente and contato_id:
