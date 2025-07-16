@@ -69,19 +69,28 @@ def exibir_checklist(usuario):
                 if r["Marcacao"] in ["X", "N/A"]:
                     comentario_padrao = comentarios_usuario.get(r["Topico"], "Comentário não encontrado.")
                     prefixo = "🟡 N/A:" if r["Marcacao"] == "N/A" else "❌"
+
+                    # 🔧 Insere o comentário manual logo após o primeiro '>'
+                    if r["ComentarioManual"] and ">" in comentario_padrao:
+                        comentario_padrao = comentario_padrao.replace(
+                            ">", f" (Obs: {r['ComentarioManual']}) >", 1
+                        )
+                    elif r["ComentarioManual"]:
+                        # fallback: insere ao final
+                        comentario_padrao += f"\n(Obs: {r['ComentarioManual']})"
+
                     comentario_final = f"{prefixo} {comentario_padrao}"
-                    if r["ComentarioManual"]:
-                        comentario_final += f"\n(Obs: {r['ComentarioManual']})"
                     comentarios.append((r["Indice"], comentario_final, r["Marcacao"]))
 
-            ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
-            prioridade = [c for c in comentarios if c[0] in ultimos_5_idx and c[2] == "X"]
-            restantes = [c for c in comentarios if c not in prioridade]
-            comentarios_final = prioridade + restantes
-            texto_gerado = "\n\n".join([c[1] for c in comentarios_final])
+    ultimos_5_idx = set(range(len(respostas) - 5, len(respostas)))
+    prioridade = [c for c in comentarios if c[0] in ultimos_5_idx and c[2] == "X"]
+    restantes = [c for c in comentarios if c not in prioridade]
+    comentarios_final = prioridade + restantes
+    texto_gerado = "\n\n".join([c[1] for c in comentarios_final])
 
-            st.session_state["texto_editado"] = texto_gerado
-            st.session_state["relatorio_gerado"] = True
+    st.session_state["texto_editado"] = texto_gerado
+    st.session_state["relatorio_gerado"] = True
+
 
         if st.session_state.get("relatorio_gerado"):
             st.text_area(
