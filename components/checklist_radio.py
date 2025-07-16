@@ -70,8 +70,12 @@ def exibir_checklist(usuario):
 
                     # Inserir comentário manual dentro do corpo do comentário padrão (após marcador '>')
                     if r["ComentarioManual"] and '>' in comentario_padrao:
-                        partes = comentario_padrao.split('>', 1)
-                        comentario_formatado = f"{partes[0]}> (Obs: {r['ComentarioManual']}) {partes[1]}"
+                        comentario_formatado = comentario_padrao.replace(
+                            '>',
+                            f'> (Obs: {r["ComentarioManual"]})',
+                            1  # só substitui o primeiro
+                        )
+
                     else:
                         comentario_formatado = comentario_padrao
                         if r["ComentarioManual"]:
