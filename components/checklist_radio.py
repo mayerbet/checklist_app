@@ -93,23 +93,23 @@ def exibir_checklist(usuario):
                 nome_atendente = st.text_input("Nome do GC:", key="nome_atendente")
                 contato_id = st.text_input("ID do chat:", key="contato_id")
 
-            if st.button("📅 Salvar Histórico"):
-                if nome_atendente and contato_id:
-                    st.session_state["texto_editado"] = st.session_state.get("texto_editado_area", "")
-                    sucesso = salvar_historico_supabase(
-                        datetime.now().isoformat(),
-                        nome_atendente,
-                        contato_id,
-                        st.session_state["texto_editado"],
-                        usuario
-                    )
-                    if sucesso:
-                        st.success("✔️ Salvo com sucesso!")
-                        st.session_state["relatorio_gerado"] = False
+                if st.button("📅 Salvar Histórico"):
+                    if nome_atendente and contato_id:
+                        st.session_state["texto_editado"] = st.session_state.get("texto_editado_area", "")
+                        sucesso = salvar_historico_supabase(
+                            datetime.now().isoformat(),
+                            nome_atendente,
+                            contato_id,
+                            st.session_state["texto_editado"],
+                            usuario
+                        )
+                        if sucesso:
+                            st.success("✔️ Salvo com sucesso!")
+                            st.session_state["relatorio_gerado"] = False
+                        else:
+                            st.error("❌ Erro ao salvar no histórico.")
                     else:
-                        st.error("❌ Erro ao salvar no histórico.")
-                else:
-                    st.warning("⚠️ Preencha todos os campos para salvar.")
-    except Exception as e:
-        st.error(f"Erro ao carregar checklist: {e}")
+                        st.warning("⚠️ Preencha todos os campos para salvar.")
+        except Exception as e:
+            st.error(f"Erro ao carregar checklist: {e}")
 
