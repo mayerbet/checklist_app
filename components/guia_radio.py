@@ -12,7 +12,7 @@ def exibir_guia(usuario):
 
     try:
        # df = carregar_guia_qualidade()
-         df = carregar_guia_qualidade().fillna("").astype(str)
+        df = carregar_guia_qualidade().fillna("").astype(str)
         # Botão para salvar no Supabase
         if st.button("💾 Salvar Guia no Supabase"):
             try:
