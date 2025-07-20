@@ -23,9 +23,7 @@ def exibir_guia(usuario):
                         "topico": row["TÓPICOS"],
                         "descricao": row["DESCRIÇÃO"]
                     })
-                # 🔍 DEBUG → Mostra os dados antes de salvar
-                st.write("Registros a serem salvos:", registros)
-                
+                                
                 resposta = supabase.table("guide").upsert(registros).execute()
                 st.success("✅ Guia salvo no Supabase com sucesso!")
             except Exception as e:
