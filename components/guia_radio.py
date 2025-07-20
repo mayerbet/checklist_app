@@ -4,12 +4,32 @@ import pandas as pd
 from utils.excel_loader import carregar_guia_qualidade
 from collections import defaultdict
 from utils.html_formatter import formatar_html_guia
+from services.supabase_client import supabase
+
 
 def exibir_guia(usuario):
     st.subheader("📘 Guia de Qualidade")
 
     try:
         df = carregar_guia_qualidade()
+        
+        #Salvar no supabase
+        if st.button("💾 Salvar Guia no Supabase"):
+    try:
+        registros = []
+        for _, row in df.iterrows():
+            registros.append({
+                "area": row["AREA"],
+                "topico": row["TÓPICOS"],
+                "descricao": row["DESCRIÇÃO"]
+            })
+
+        resposta = supabase.table("guia").upsert(registros).execute()
+        st.success("✅ Guia salvo no Supabase com sucesso!")
+
+    except Exception as e:
+        st.error(f"❌ Erro ao salvar no Supabase: {e}")
+
         
         # Agrupa os tópicos por área
         areas_agrupadas = defaultdict(list)
