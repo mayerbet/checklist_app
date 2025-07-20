@@ -12,25 +12,23 @@ def exibir_guia(usuario):
 
     try:
         df = carregar_guia_qualidade()
-        
-        #Salvar no supabase
-            if st.button("💾 Salvar Guia no Supabase"):
-        try:
-            registros = []
-            for _, row in df.iterrows():
-                registros.append({
-                    "area": row["AREA"],
-                    "topico": row["TÓPICOS"],
-                    "descricao": row["DESCRIÇÃO"]
-                })
 
-            resposta = supabase.table("guia").upsert(registros).execute()
-            st.success("✅ Guia salvo no Supabase com sucesso!")
+        # Botão para salvar no Supabase
+        if st.button("💾 Salvar Guia no Supabase"):
+            try:
+                registros = []
+                for _, row in df.iterrows():
+                    registros.append({
+                        "area": row["AREA"],
+                        "topico": row["TÓPICOS"],
+                        "descricao": row["DESCRIÇÃO"]
+                    })
 
-        except Exception as e:
-            st.error(f"❌ Erro ao salvar no Supabase: {e}")
+                resposta = supabase.table("guia").upsert(registros).execute()
+                st.success("✅ Guia salvo no Supabase com sucesso!")
+            except Exception as e:
+                st.error(f"❌ Erro ao salvar no Supabase: {e}")
 
-        
         # Agrupa os tópicos por área
         areas_agrupadas = defaultdict(list)
         for _, row in df.iterrows():
