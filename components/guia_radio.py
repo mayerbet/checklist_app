@@ -11,8 +11,8 @@ def exibir_guia(usuario):
     st.subheader("📘 Guia de Qualidade")
 
     try:
-        df = carregar_guia_qualidade()
-
+       # df = carregar_guia_qualidade()
+         df = carregar_guia_qualidade().fillna("").astype(str)
         # Botão para salvar no Supabase
         if st.button("💾 Salvar Guia no Supabase"):
             try:
