@@ -24,7 +24,7 @@ def exibir_guia(usuario):
                         "descricao": row["DESCRIÇÃO"]
                     })
 
-                resposta = supabase.table("guia").upsert(registros).execute()
+                resposta = supabase.table("guide").upsert(registros).execute()
                 st.success("✅ Guia salvo no Supabase com sucesso!")
             except Exception as e:
                 st.error(f"❌ Erro ao salvar no Supabase: {e}")
