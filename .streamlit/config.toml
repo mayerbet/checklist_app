@@ -2,6 +2,6 @@
 primaryColor = "#00ffb6"
 backgroundColor = "#282828"
 secondaryBackgroundColor = "#005440"
-textColor = "#ffffff"
+textColor = "#F6EFE8"
 [runtime]
 python_version = "3.10"
