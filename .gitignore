@@ -1,0 +1,10 @@
+# Credenciais locais do Streamlit
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+
+# Ambientes virtuais
+.venv/
+venv/
